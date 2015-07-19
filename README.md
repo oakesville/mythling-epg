@@ -1,2 +1,2 @@
-# mythling-epg
+# Mythling EPG
 Program Guide for MythTV
