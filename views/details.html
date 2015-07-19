@@ -1,0 +1,50 @@
+<div class="modal-header">
+  <span class="modal-title">{{program.Title}}</span>
+  <button type="button" class="close-button" style="float:right;" ng-click="close()">
+    <img src="images/x.png" />
+  </button>  
+</div>
+<div class="modal-body">
+  <div ng-if="program.subTitle != ''">
+    {{program.subTitle}}
+  </div>
+  <div>
+    {{program.start | date:'MMM d h:mm a'}} - {{program.end | date:'h:mm a'}} &nbsp; {{program.channel.ChanNum}} ({{program.channel.CallSign}})
+    <p ng-if="program.category || program.originalAirDate">
+      <span class="program-category">{{program.category}} </span> 
+      <span ng-if="program.originalAirDate">(Originally Aired {{program.originalAirDate | date:'MMM d, yyyy'}})</span>
+    </p>
+    <accordion close-others="true">
+      <accordion-group is-open="true">
+        <accordion-heading><div class="accordion-heading">Description</div></accordion-heading>
+        <p class="program-details" ng-if="guideData.demoMode">
+          Not available in demo
+        </p>
+        <p class="program-details" ng-if="!guideData.demoMode">
+          {{program.description}}
+        </p>
+      </accordion-group>
+      <accordion-group>
+        <accordion-heading><div class="accordion-heading">Cast</div></accordion-heading>
+        <p class="program-details" ng-if="guideData.demoMode">
+          Not available in demo
+        </p>
+        <p class="program-details" ng-if="!guideData.isMyth28 && !guideData.demoMode">
+          Cast only available in MythTV 0.28
+        </p>
+        <p class="program-details" ng-if="guideData.isMyth28 && !guideData.demoMode">
+          Directed by: {{program.directors}}<br/>
+          Starring: {{program.actors}}
+        </p>
+      </accordion-group>
+    </accordion>
+  </div>
+</div>
+<div class="modal-footer">
+  <div ng-if="program.willRecord" class="details-status">Will Record</div>
+  <button class="btn btn-default modal-button" epg-record="single" ng-if="!program.willRecord" ng-click="close(program)">Record This</button>
+  <button class="btn btn-default modal-button" epg-record="all" ng-if="!program.willRecord" ng-click="close(program)">Record All</button>
+  <button class="btn btn-default modal-button" epg-record="dont" ng-if="program.willRecord" ng-click="close(program)">Don't Record</button>
+  <button class="btn btn-default modal-button" epg-record="never" ng-if="program.willRecord" ng-click="close(program)">Never Record</button>
+  <button class="btn btn-default modal-button" autofocus ng-click="fireEpgAction('close');close(program)">Close</button>
+</div>

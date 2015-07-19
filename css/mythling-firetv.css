@@ -1,0 +1,11 @@
+/* Fire TV styles */
+.action-button:focus {
+  border: 2px solid #18ffff;
+  margin: 1px 0 0 0;
+}
+.dropdown-menu > li > a:focus {
+  color: #262626;
+  text-decoration: none;
+  background-color: #b0bec5;
+  border-radius: 3px;
+}
