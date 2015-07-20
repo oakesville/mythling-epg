@@ -184,6 +184,10 @@ table {
   background-color: #80cbc4;
   background: linear-gradient(to top, #80cbc4, #e0f2f1);
 }
+.program-error {
+  background-color: #ef9a9a;
+  background: linear-gradient(to top, #ef9a9a, #ffebee);
+}
 .program-details {
   padding-top: 2px;
 }
@@ -192,6 +196,12 @@ table {
 	font-size: 12px;
 	font-weight: bold;
 	margin-top: 8px;
+}
+.details-record {
+	color: #009688;
+}
+.details-error {
+	color: #f44336;
 }
 .program-category {
   font-style: italic;  

@@ -6,6 +6,34 @@
 var epgApp = angular.module('epgApp', ['epgSearch', 'epgCalendar', 'infinite-scroll', 'stay', 'ui.bootstrap']);
 
 epgApp.constant('ERROR_TAG', 'ERROR: ');
+epgApp.value('RECORD_STATUSES', [
+  // from programtypes.h
+  {status: 'Failing', code: -14, record: false, error: true, description: 'Failing'},
+  {status: 'MissedFuture', code: -11, record: false, error: true, description: 'Missed Future'},
+  {status: 'Tuning', code: -10, record: true, error: false, description: 'Tuning'},
+  {status: 'Failed', code: -9, record: false, error: true, description: 'Failed'},
+  {status: 'TunerBusy', code: -8, record: false, error: true, description: 'Tuner Busy'},
+  {status: 'LowDiskSpace', code: -7, record: false, error: true, description: 'Low Disk Space'},
+  {status: 'Cancelled', code: -6, record: false, error: false, description: 'Cancelled'},
+  {status: 'Missed', code: -5, record: false, error: false, description: 'Missed'},
+  {status: 'Aborted', code: -4, record: false, error: false, description: 'Aborted'},
+  {status: 'Recorded', code: -3, record: true, error: false, description: 'Recorded'},
+  {status: 'Recording', code: -2, record: true, error: false, description: 'Recording'},
+  {status: 'WillRecord', code: -1, record: true, error: false, description: 'Will Record'},
+  {status: 'Unknown', code: 0, record: false, error: false, description: ''},
+  {status: 'DontRecord', code: 1, record: false, error: false, description: "Don't Record"},
+  {status: 'PreviousRecording', code: 2, record: false, error: false, description: 'Previous Recording'},
+  {status: 'CurrentRecording', code: 3, record: false, error: false, description: 'Current Recording'},
+  {status: 'EarlierShowing', code: 4, record: false, error: false, description: 'Earlier Showing'},
+  {status: 'TooManyRecordings', code: 5, record: false, error: false, description: 'Too Many Recordings'},
+  {status: 'NotListed', code: 6, record: false, error: true, description: 'Not Listed'},
+  {status: 'Conflict', code: 7, record: false, error: false, description: 'Conflict'},
+  {status: 'LaterShowing', code: 8, record: false, error: false, description: 'Later Showing'},
+  {status: 'Repeat', code: 9, record: false, error: false, description: 'Repeat'},
+  {status: 'Inactive', code: 10, record: false, error: false, description: 'Inactive'},
+  {status: 'NeverRecord', code: 11, record: false, error: false, description: 'Never Record'},
+  {status: 'Offline', code: 12, record: false, error: true, description: 'Recorder Offline'}
+]);
 
 epgApp.config(['$compileProvider', function($compileProvider) {
   var debugInfo = 'true' == urlParams().angularDebug;
@@ -33,8 +61,8 @@ epgApp.config(['$tooltipProvider', function($tooltipProvider) {
 }]);
 
 epgApp.controller('EpgController', 
-    ['$scope', '$window', '$http', '$timeout', '$location', '$modal', '$filter', 'GuideData', 
-    function($scope, $window, $http, $timeout, $location, $modal, $filter, GuideData) {
+    ['$scope', '$window', '$http', '$timeout', '$location', '$modal', '$filter', 'GuideData', 'RECORD_STATUSES', 
+    function($scope, $window, $http, $timeout, $location, $modal, $filter, GuideData, RECORD_STATUSES) {
 
   console.log('userAgent: ' + $window.navigator.userAgent);
   console.log('location: ' + $window.location);
@@ -71,6 +99,24 @@ epgApp.controller('EpgController',
   var demoMode = params.demoMode ? params.demoMode == 'true' : false;
   
   $scope.guideData = new GuideData(startTime, $scope.slotWidth, guideInterval, awaitPrime, guideHistory, channelGroupId, mythlingServices, demoMode);
+  
+  // takes either code or status as input for futureproofing
+  // TODO: make this into a service so it can be used by GuideData
+  $scope.recordStatus = function(input) {
+    var recCode = parseInt(input);
+    if (isNaN(recCode)) {
+      for (var i = 0; i < RECORD_STATUSES.length; i++) {
+        if (RECORD_STATUSES[i].status == input)
+          return RECORD_STATUSES[i];
+      }
+    }
+    else {
+      for (var i = 0; i < RECORD_STATUSES.length; i++) {
+        if (RECORD_STATUSES[i].code == recCode)
+          return RECORD_STATUSES[i];
+      }
+    }
+  }
   
   $scope.setPosition = function(offset) {
     var slots = Math.floor(offset / $scope.slotWidth);
@@ -165,6 +211,11 @@ epgApp.controller('EpgController',
           program.directors = directors.substring(0, directors.length - 2);
         if (actors !== '')
           program.actors = actors.substring(0, actors.length - 2);
+      }
+      
+      if (Program.Recording && Program.Recording.Status) {
+        var statusCode = parseInt(Program.Recording.Status);
+        program.recStatus = $scope.recordStatus(statusCode);
       }
 
       $scope.program = program;
@@ -290,7 +341,7 @@ epgApp.directive('blurMe', function() {
   };
 });
 
-epgApp.directive('epgRecord', ['$http', function($http) {
+epgApp.directive('epgRecord', ['$http', 'ERROR_TAG', function($http, ERROR_TAG) {
   return {
     restrict: 'A',
     link: function link(scope, elem, attrs) {
@@ -311,9 +362,11 @@ epgApp.directive('epgRecord', ['$http', function($http) {
         else if (action == 'dont' || action == 'never') {
           url += 'AddDontRecordSchedule?' + 
               'ChanId=' + scope.program.channel.ChanId + '&' + 
-              'StartTime=' + scope.program.StartTime + '&' + 
-              'NeverRecord=' + (action == 'never');
+              'StartTime=' + scope.program.StartTime 
         }
+        
+        if (action == 'never')
+          url += 'NeverRecord=true';
         
         if (action == 'transcode')
           url += '&AutoTranscode=true';
@@ -321,11 +374,38 @@ epgApp.directive('epgRecord', ['$http', function($http) {
         scope.fireEpgAction('record');
         console.log('record action url: ' + url);
         if (scope.guideData.demoMode) {
-          scope.program.willRecord = (action == 'single' || action == 'transcode' || action == 'all');
+          if ((action == 'single' || action == 'transcode' || action == 'all'))
+            scope.program.recStatus = RECORD_STATUSES[11];
+          else
+            scope.program.recStatus = RECORD_STATUSES[12];
         }
         else {
           $http.post(url).success(function(data, status, headers, config) {
-            scope.program.willRecord = (action == 'single' || action == 'transcode' || action == 'all');
+            var recordId = data.uint;
+            console.log('record id: ' + recordId);
+            // update recording status for all programs based on upcoming recordings
+            url = '/Dvr/GetUpcomingList';
+            $http.get(url).success(function(data, status, headers, config) {
+              console.log('upcoming list response time: ' + config.responseTime);
+              var upcoming = data.ProgramList.Programs;
+              for (var i = 0; i < upcoming.length; i++) {
+                var upProg = upcoming[i];
+                if (upProg.Title == scope.program.Title) {
+                  for (var j = 0; j < scope.guideData.channels.length; j++) {
+                    for (var k = 0; k < scope.guideData.channels[j].programs.length; k++) {
+                      var prog = scope.guideData.channels[j].programs[k];
+                      if (prog.Title == upProg.Title && prog.StartTime == upProg.StartTime) {
+                        prog.recStatus = recordStatus(upProg.Recording.Status);
+                      }
+                    }
+                  } 
+                }
+              }
+            }).error(function(data, status) {
+              console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
+            });
+          }).error(function(data, status) {
+            console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
           });
         }
       });
@@ -334,7 +414,7 @@ epgApp.directive('epgRecord', ['$http', function($http) {
 }]);
 
 // GuideData constructor function to encapsulate HTTP and pagination logic
-epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_TAG', function($http, $timeout, $window, $filter, ERROR_TAG) {
+epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_TAG', 'RECORD_STATUSES', function($http, $timeout, $window, $filter, ERROR_TAG, RECORD_STATUSES) {
   var GuideData = function(startDate, slotWidth, intervalHours, awaitPrime, historyHours, channelGroupId, mythlingServices, demoMode) {
     
     this.slotWidth = slotWidth; // width of 1/2 hour
@@ -473,8 +553,13 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
                 prog.offset = channel.progOffset;
                 prog.width = Math.round(this.slotWidth * slots);
                 prog.subTitle = prog.SubTitle ? '"' + prog.SubTitle + '"' : '';
-                prog.willRecord = prog.Recording.Status == '-1' || prog.Recording.Status == '-2' || prog.Recording.Status == '-3' || 
-                    prog.Recording.Status == 'WillRecord' || prog.Recording.Status == 'Recording' || prog.Recording.Status == 'Recorded'; // futureproofing
+                if (prog.Recording && prog.Recording.Status) {
+                  var recCode = parseInt(prog.Recording.Status);
+                  for (var k = 0; k < RECORD_STATUSES.length; k++) {
+                    if (RECORD_STATUSES[k].code == recCode)
+                      prog.recStatus = RECORD_STATUSES[k];
+                  }
+                }
                 prog.channel = channel;
                 prog.id = 'ch' + channel.ChanId + 'pr' + prog.StartTime;
                 prog.seq = 'ch' + chanIdx + 'pr' + channel.progSize;
