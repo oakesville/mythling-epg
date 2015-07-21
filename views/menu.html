@@ -20,6 +20,9 @@
     <a href="#" ng-if="guideData.isMyth28" epg-record="never">Never Record</a>
     <span ng-if="!guideData.isMyth28">Never Record</span>
   </li>
+  <li ng-if="program.recStatus.record">
+    <a href="#" epg-record="remove">Remove Record Schedule</a>
+  </li>
   
   <li class="divider"></li>
   <li ng-click="details(program)">

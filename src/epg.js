@@ -350,7 +350,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
     link: function link(scope, elem, attrs) {
       elem.bind('click', function() {
         var action = attrs.epgRecord;
-        // TODO use a controller
+        // TODO use a controller -- this MUST be refactored
         var url = '/Dvr/';
         if (action == 'single' || action == 'transcode' || action == 'all') {
           url += 'AddRecordSchedule?' + 
@@ -364,6 +364,11 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
         }
         else if (action == 'dont' || action == 'never') {
           url += 'AddDontRecordSchedule?' + 
+              'ChanId=' + scope.program.channel.ChanId + '&' + 
+              'StartTime=' + scope.program.StartTime; 
+        }
+        else if (action == 'remove') {
+          url += 'GetRecordSchedule?' + 
               'ChanId=' + scope.program.channel.ChanId + '&' + 
               'StartTime=' + scope.program.StartTime; 
         }
@@ -384,35 +389,53 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
         }
         else {
           $http.post(url).success(function(data, status, headers, config) {
-            var recordId = data.uint;
-            console.log('record id: ' + recordId);
-            // update recording status for all programs based on upcoming recordings
-            $timeout(function() {
-              url = '/Dvr/GetUpcomingList?ShowAll=true';
-              $http.get(url).success(function(data, status, headers, config) {
-                console.log('upcoming list response time: ' + config.responseTime);
-                var upcoming = data.ProgramList.Programs;
-                for (var i = 0; i < upcoming.length; i++) {
-                  var upProg = upcoming[i];
-                  if (upProg.Title == scope.program.Title) {
-                    var chanNum = upProg.Channel.ChanNum;
-                    // pad to 4 digits
-                    while (chanNum.length < 4)
-                      chanNum = '0' + chanNum;
-                    var chan = scope.guideData.channels[chanNum];
-                    if (chan) {
-                      var prog = chan.programs[upProg.StartTime];
-                      if (prog && prog.Title == upProg.Title) {
-                        prog.recStatus = scope.recordStatus(upProg.Recording.Status);
-                        console.log('program: ' + prog.id + ' recStatus: ' + prog.recStatus.code);
-                      }
-                    }
-                  }
-                }
+            if (action == 'remove') {
+              var recId = data.RecRule.Id;
+              url = '/Dvr/RemoveRecordSchedule?RecordId=' + recId;
+              console.log('remove recording schedule url: ' + url);
+              $http.post(url).success(function(data, status, headers, config) {
+                $timeout(function() {
+                  var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
+                  $http.get(upcomingUrl).success(function(data, status, headers, config) {
+                    console.log('upcoming list response time: ' + config.responseTime);
+                    //scope.applyRecStatusUpdates(scope.program.Title, data.ProgramList);
+                  }).error(function(data, status) {
+                    console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
+                  });
+                }, 500);
               }).error(function(data, status) {
                 console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
               });
-            }, 500);
+            }
+            else {
+              $timeout(function() {
+                var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
+                $http.get(upcomingUrl).success(function(data, status, headers, config) {
+                  console.log('upcoming list response time: ' + config.responseTime);
+                  // update recording status for all programs based on upcoming recordings
+                  var upcoming = data.ProgramList.Programs;
+                  for (var i = 0; i < upcoming.length; i++) {
+                    var upProg = upcoming[i];
+                    if (upProg.Title == scope.program.Title) {
+                      var chanNum = upProg.Channel.ChanNum;
+                      // pad to 4 digits
+                      while (chanNum.length < 4)
+                        chanNum = '0' + chanNum;
+                      var chan = scope.guideData.channels[chanNum];
+                      if (chan) {
+                        var prog = chan.programs[upProg.StartTime];
+                        if (prog && prog.Title == upProg.Title) {
+                          prog.recStatus = scope.recordStatus(upProg.Recording.Status);
+                          console.log('program: ' + prog.id + ' recStatus: ' + prog.recStatus.code);
+                        }
+                      }
+                    }
+                  }
+                }).error(function(data, status) {
+                  console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
+                });
+              }, 500);
+            }
           }).error(function(data, status) {
             console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
           });

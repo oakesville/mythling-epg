@@ -56,4 +56,6 @@
     ng-if="program.recStatus.record" ng-disabled="!guideData.isMyth28" ng-click="close(program)">Don't Record</button>
   <button class="btn btn-default modal-button" epg-record="never" 
     ng-if="program.recStatus.record" ng-disabled="!guideData.isMyth28" ng-click="close(program)">Never Record</button>
+  <button class="btn btn-default modal-button" epg-record="remove" 
+    ng-if="program.recStatus.record" ng-click="close(program)">Remove Record Schedule</button>    
 </div>
