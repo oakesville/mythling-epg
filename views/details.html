@@ -45,9 +45,9 @@
     ng-class="{'details-record': program.recStatus.record, 'details-error': program.recStatus.error}">
     {{program.recStatus.description}}
   </div>
-  <button class="btn btn-default modal-button" epg-record="single" ng-if="!program.willRecord" ng-click="close(program)">Record This</button>
-  <button class="btn btn-default modal-button" epg-record="all" ng-if="!program.willRecord" ng-click="close(program)">Record All</button>
-  <button class="btn btn-default modal-button" epg-record="dont" ng-if="program.willRecord" ng-click="close(program)">Don't Record</button>
-  <button class="btn btn-default modal-button" epg-record="never" ng-if="program.willRecord" ng-click="close(program)">Never Record</button>
+  <button class="btn btn-default modal-button" epg-record="single" ng-if="!program.recStatus.record" ng-click="close(program)">Record This</button>
+  <button class="btn btn-default modal-button" epg-record="all" ng-if="!program.recStatus.record" ng-click="close(program)">Record All</button>
+  <button class="btn btn-default modal-button" epg-record="dont" ng-if="program.recStatus.record" ng-click="close(program)">Don't Record</button>
+  <button class="btn btn-default modal-button" epg-record="never" ng-if="program.recStatus.record" ng-click="close(program)">Never Record</button>
   <button class="btn btn-default modal-button" autofocus ng-click="fireEpgAction('close');close(program)">Close</button>
 </div>
