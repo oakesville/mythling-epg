@@ -9,12 +9,3 @@
   background-color: #b0bec5;
   border-radius: 3px;
 }
-.close-button {
-  display: inline-block;
-  vertical-align: middle;
-  cursor: default;
-  padding: 0px;
-  margin: 1px;
-  border: none;
-  background-color: transparent;
-}

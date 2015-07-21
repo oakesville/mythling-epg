@@ -221,6 +221,7 @@ table {
 }
 .modal-button {
   background-color: #e8e8e9;
+  padding: 6px 8px;
   /* background: linear-gradient(to top, #eceff1, #b0bec5); */
 }
 .search-popover {
@@ -284,7 +285,9 @@ table {
   margin: 1px;
   border: none;
   background-color: transparent;
-  outline: none;
+}
+.close-button:hover {
+	outline: none;
 }
 .close-button img {
   background-color: white;
