@@ -385,7 +385,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
             console.log('record id: ' + recordId);
             // update recording status for all programs based on upcoming recordings
             $timeout(function() {
-              url = '/Dvr/GetUpcomingList';
+              url = '/Dvr/GetUpcomingList?ShowAll=true';
               $http.get(url).success(function(data, status, headers, config) {
                 console.log('upcoming list response time: ' + config.responseTime);
                 var upcoming = data.ProgramList.Programs;
@@ -409,7 +409,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
               }).error(function(data, status) {
                 console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
               });
-            }, 1000);
+            }, 500);
           }).error(function(data, status) {
             console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
           });

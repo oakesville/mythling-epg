@@ -49,7 +49,7 @@ epgSearch.controller('EpgSearchController', ['$scope', '$timeout', 'search', fun
     }
     else {
       if (!$scope.guideData.isMyth28)
-        return 'Search requires MythTV 0.28';
+        return 'Available in MythTV 0.28';
       else if ($scope.guideData.demoMode)
         return 'Search not available in demo';
     }

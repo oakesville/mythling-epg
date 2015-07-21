@@ -188,6 +188,10 @@ table {
   background-color: #ef9a9a;
   background: linear-gradient(to top, #ef9a9a, #ffebee);
 }
+.program-warn {
+  background-color: #fff176;
+  background: linear-gradient(to top, #fff176, #fffde7);
+}
 .program-details {
   padding-top: 2px;
 }
@@ -202,6 +206,9 @@ table {
 }
 .details-error {
 	color: #f44336;
+}
+.details-warn {
+  color: #f9a825;
 }
 .program-category {
   font-style: italic;  
