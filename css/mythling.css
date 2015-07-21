@@ -275,7 +275,6 @@ table {
   font-size: 11px;
   font-weight: normal;
   margin-left: 2px;
-  
 }
 .close-button {
   display: inline-block;
@@ -285,10 +284,11 @@ table {
   margin: 1px;
   border: none;
   background-color: transparent;
+  outline: none;
 }
 .close-button img {
   background-color: white;
-  padding: 3px;
+  padding: 5px;
   border: 1px solid transparent;
   border-radius: 2px;
 }

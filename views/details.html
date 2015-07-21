@@ -1,6 +1,6 @@
 <div class="modal-header">
   <span class="modal-title">{{program.Title}}</span>
-  <button type="button" class="close-button" style="float:right;" ng-click="fireEpgAction('close');close(program);">
+  <button type="button" class="close-button" autofocus style="float:right;" ng-click="fireEpgAction('close');close(program);">
     <img src="images/x.png" />
   </button>  
 </div>
@@ -56,6 +56,4 @@
     ng-if="program.recStatus.record" ng-disabled="!guideData.isMyth28" ng-click="close(program)">Don't Record</button>
   <button class="btn btn-default modal-button" epg-record="never" 
     ng-if="program.recStatus.record" ng-disabled="!guideData.isMyth28" ng-click="close(program)">Never Record</button>
-    
-  <button class="btn btn-default modal-button" autofocus ng-click="fireEpgAction('close');close(program);">Close</button>
 </div>
