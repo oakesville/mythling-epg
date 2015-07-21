@@ -322,6 +322,18 @@ table {
   outline: none;
   padding: 3px 10px;
 }
+/* disabled menu items */
+.dropdown-menu > li > span {
+  outline: none;
+  padding: 3px 10px;
+  display: block;
+  clear: both;
+  font-weight: normal;
+  font-style: italic;
+  line-height: 1.42857143;
+  color: #909090;
+  white-space: nowrap;  
+}
 .dropdown-menu > li > a:focus {
   background-color: transparent;
 }

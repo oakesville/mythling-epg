@@ -1,9 +1,28 @@
 <ul class="dropdown-menu popover-menu">
-  <li ng-if="!program.recStatus.record"><a href="#" focus-me epg-record="single">Record This</a></li>
-  <li ng-if="!program.recStatus.record"><a href="#" epg-record="transcode">Record &amp; Transcode</a></li>
-  <li ng-if="!program.recStatus.record"><a href="#" epg-record="all">Record All</a></li>
-  <li ng-if="program.recStatus.record"><a href="#" focus-me epg-record="dont">Don't Record</a></li>
-  <li ng-if="program.recStatus.record"><a href="#" epg-record="never">Never Record</a></li>
+  <li ng-if="!program.recStatus.record">
+    <a href="#" ng-if="!program.recStatus.error" epg-record="single">Record This</a>
+    <span ng-if="program.recStatus.error">Record This</span>
+  </li>
+  <li ng-if="!program.recStatus.record">
+    <a href="#" ng-if="!program.recStatus.error" epg-record="transcode">Record &amp; Transcode</a>
+    <span ng-if="program.recStatus.error">Record &amp; Transcode</span>
+  </li>
+  <li ng-if="!program.recStatus.record">
+    <a href="#" ng-if="!program.recStatus.error" epg-record="all">Record All</a>
+    <span ng-if="program.recStatus.error">Record All</span>
+  </li>
+  
+  <li ng-if="program.recStatus.record">
+    <a href="#" ng-if="guideData.isMyth28" epg-record="dont">Don't Record</a>
+    <span ng-if="!guideData.isMyth28">Don't Record</span>
+  </li>
+  <li ng-if="program.recStatus.record">
+    <a href="#" ng-if="guideData.isMyth28" epg-record="never">Never Record</a>
+    <span ng-if="!guideData.isMyth28">Never Record</span>
+  </li>
+  
   <li class="divider"></li>
-  <li ng-click="details(program)"><a href="#">Details...</a></li>
+  <li ng-click="details(program)">
+    <a href="#" focus-me>Details...</a>
+  </li>
 </ul>
