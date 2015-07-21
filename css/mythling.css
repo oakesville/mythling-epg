@@ -197,9 +197,9 @@ table {
 }
 .details-status {
 	float: left;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: bold;
-	margin-top: 8px;
+	margin-top: 6px;
 }
 .details-record {
 	color: #009688;

@@ -159,7 +159,7 @@ epgApp.controller('EpgController',
       angular.element(document.getElementById(program.id)).addClass('program-select');
     }, 0);
     
-    if ($scope.guideData.demoMode || !$scope.guideData.isMyth28) {
+    if ($scope.guideData.demoMode) {
       $scope.program = program;
       var modalInstance = $modal.open({
         animation: false,
@@ -225,6 +225,15 @@ epgApp.controller('EpgController',
         controller: 'EpgModalController',
         scope: $scope
       });
+      
+      modalInstance.result.catch(function() {
+        // TODO: better way
+        $timeout(function() {
+          var progElem = document.getElementById(program.id);
+          angular.element(progElem).removeClass('program-select');
+          progElem.focus();
+        }, 0);    
+      });
     });
   };
   
@@ -240,12 +249,6 @@ epgApp.controller('EpgController',
 
 epgApp.controller('EpgModalController', ['$scope', '$timeout', '$modalInstance', function($scope, $timeout, $modalInstance) {
   $scope.close = function(program) {
-    // TODO: better way
-    $timeout(function() {
-      var progElem = document.getElementById(program.id);
-      angular.element(progElem).removeClass('program-select');
-      progElem.focus();
-    }, 0);    
     $modalInstance.dismiss('close');
   };
 }]);
