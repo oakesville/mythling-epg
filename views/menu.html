@@ -1,15 +1,15 @@
 <ul class="dropdown-menu popover-menu">
   <li ng-if="!program.recStatus.record">
-    <a href="#" ng-if="!program.recStatus.error" epg-record="single">Record This</a>
-    <span ng-if="program.recStatus.error">Record This</span>
+    <a href="#" ng-if="!program.recStatus.error && program.recStatus.code != 7" epg-record="single">Record This</a>
+    <span ng-if="program.recStatus.error || program.recStatus.code == 7">Record This</span>
   </li>
   <li ng-if="!program.recStatus.record">
-    <a href="#" ng-if="!program.recStatus.error" epg-record="transcode">Record &amp; Transcode</a>
-    <span ng-if="program.recStatus.error">Record &amp; Transcode</span>
+    <a href="#" ng-if="!program.recStatus.error && program.recStatus.code != 7" epg-record="transcode">Record &amp; Transcode</a>
+    <span ng-if="program.recStatus.error || program.recStatus.code == 7">Record &amp; Transcode</span>
   </li>
   <li ng-if="!program.recStatus.record">
-    <a href="#" ng-if="!program.recStatus.error" epg-record="all">Record All</a>
-    <span ng-if="program.recStatus.error">Record All</span>
+    <a href="#" ng-if="!program.recStatus.error && program.recStatus.code != 7" epg-record="all">Record All</a>
+    <span ng-if="program.recStatus.error || program.recStatus.code == 7">Record All</span>
   </li>
   
   <li ng-if="program.recStatus.record">

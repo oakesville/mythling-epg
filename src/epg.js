@@ -412,7 +412,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
                 var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
                 $http.get(upcomingUrl).success(function(data, status, headers, config) {
                   console.log('upcoming list response time: ' + config.responseTime);
-                  // update recording status for all programs based on upcoming recordings
+                  // update recording status for all matching programs in upcoming recordings
                   var upcoming = data.ProgramList.Programs;
                   for (var i = 0; i < upcoming.length; i++) {
                     var upProg = upcoming[i];
