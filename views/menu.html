@@ -1,30 +1,27 @@
 <ul class="dropdown-menu popover-menu">
-  <li ng-if="!program.recStatus.record">
-    <a href="#" ng-if="!program.recStatus.error && program.recStatus.code != 7" epg-record="single">Record This</a>
-    <span ng-if="program.recStatus.error || program.recStatus.code == 7">Record This</span>
+  <li ng-if="program.recStatus.actions.indexOf('single') >= 0">
+    <a href="#" epg-record="single">Record This</a>
   </li>
-  <li ng-if="!program.recStatus.record">
-    <a href="#" ng-if="!program.recStatus.error && program.recStatus.code != 7" epg-record="transcode">Record &amp; Transcode</a>
-    <span ng-if="program.recStatus.error || program.recStatus.code == 7">Record &amp; Transcode</span>
+  <li ng-if="program.recStatus.actions.indexOf('transcode') >= 0">
+    <a href="#" epg-record="transcode">Record &amp; Transcode</a>
   </li>
-  <li ng-if="!program.recStatus.record">
-    <a href="#" ng-if="!program.recStatus.error && program.recStatus.code != 7" epg-record="all">Record All</a>
-    <span ng-if="program.recStatus.error || program.recStatus.code == 7">Record All</span>
+  <li ng-if="program.recStatus.actions.indexOf('all') >= 0">
+    <a href="#" epg-record="all">Record All</a>
   </li>
   
-  <li ng-if="program.recStatus.record">
+  <li ng-if="program.recStatus.actions.indexOf('dont') >= 0">
     <a href="#" ng-if="guideData.isMyth28" epg-record="dont">Don't Record</a>
     <span ng-if="!guideData.isMyth28">Don't Record</span>
   </li>
-  <li ng-if="program.recStatus.record">
+  <li ng-if="program.recStatus.actions.indexOf('never') >= 0">
     <a href="#" ng-if="guideData.isMyth28" epg-record="never">Never Record</a>
     <span ng-if="!guideData.isMyth28">Never Record</span>
   </li>
-  <li ng-if="program.recStatus.record">
-    <a href="#" epg-record="remove">Remove Record Schedule</a>
+  <li ng-if="program.recStatus.actions.indexOf('remove') >= 0">
+    <a href="#" epg-record="remove">Remove Schedule</a>
   </li>
   
-  <li class="divider"></li>
+  <li class="divider" ng-if="program.recStatus.actions.length > 0"></li>
   <li ng-click="details(program)">
     <a href="#">Details...</a>
   </li>

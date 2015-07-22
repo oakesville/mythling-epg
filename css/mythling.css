@@ -200,6 +200,7 @@ table {
 	font-size: 14px;
 	font-weight: bold;
 	margin-top: 6px;
+	margin-right: 5px;
 }
 .details-record {
 	color: #009688;
@@ -379,6 +380,8 @@ table {
 }
 .modal-footer {
   margin-top: 5px;
+  padding-left: 10px;
+  white-space: nowrap;
 }
 .panel-heading {
   padding: 5px;

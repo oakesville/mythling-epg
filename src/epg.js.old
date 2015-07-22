@@ -8,56 +8,31 @@ var epgApp = angular.module('epgApp', ['epgSearch', 'epgCalendar', 'infinite-scr
 epgApp.constant('ERROR_TAG', 'ERROR: ');
 epgApp.value('RECORD_STATUSES', [
   // from programtypes.h
-  { status: 'Failing', code: -14, record: false, error: true, description: 'Failing',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'MissedFuture', code: -11, record: false, error: true, description: 'Missed Future',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Tuning', code: -10, record: true, error: false, description: 'Tuning',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Failed', code: -9, record: false, error: true, description: 'Failed',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'TunerBusy', code: -8, record: false, error: true, description: 'Tuner Busy',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'LowDiskSpace', code: -7, record: false, error: true, description: 'Low Disk Space',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Cancelled', code: -6, record: false, error: false, description: 'Cancelled',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Missed', code: -5, record: false, error: false, description: 'Missed',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Aborted', code: -4, record: false, error: false, description: 'Aborted',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Recorded', code: -3, record: true, error: false, description: 'Recorded',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Recording', code: -2, record: true, error: false, description: 'Recording',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'WillRecord', code: -1, record: true, error: false, description: 'Will Record',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Unknown', code: 0, record: false, error: false, description: '',
-    actions: ['single', 'transcode', 'all'] },
-  { status: 'DontRecord', code: 1, record: false, error: false, description: "Don't Record",
-    actions: ['single', 'transcode', 'all'] },
-  { status: 'PreviousRecording', code: 2, record: false, error: false, description: 'Previous Recording',
-    actions: ['single', 'transcode', 'remove'] },
-  { status: 'CurrentRecording', code: 3, record: false, error: false, description: 'Current Recording',
-    actions: ['single', 'transcode', 'remove'] },
-  { status: 'EarlierShowing', code: 4, record: false, error: false, description: 'Earlier Showing',
-    actions: ['single', 'transcode', 'remove'] },
-  { status: 'TooManyRecordings', code: 5, record: false, error: false, description: 'Too Many Recordings',
-    actions: ['single', 'transcode', 'remove'] },
-  { status: 'NotListed', code: 6, record: false, error: true, description: 'Not Listed',
-    actions: [] },
-  { status: 'Conflict', code: 7, record: false, error: false, description: 'Conflict',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'LaterShowing', code: 8, record: false, error: false, description: 'Later Showing',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Repeat', code: 9, record: false, error: false, description: 'Repeat',
-    actions: ['dont', 'never', 'remove'] },
-  { status: 'Inactive', code: 10, record: false, error: false, description: 'Inactive',
-    actions: ['single', 'transcode', 'all'] },
-  { status: 'NeverRecord', code: 11, record: false, error: false, description: 'Never Record',
-    actions: ['single', 'transcode', 'all'] },
-  { status: 'Offline', code: 12, record: false, error: true, description: 'Recorder Offline',
-    actions: [] }
+  {status: 'Failing', code: -14, record: false, error: true, description: 'Failing'},
+  {status: 'MissedFuture', code: -11, record: false, error: true, description: 'Missed Future'},
+  {status: 'Tuning', code: -10, record: true, error: false, description: 'Tuning'},
+  {status: 'Failed', code: -9, record: false, error: true, description: 'Failed'},
+  {status: 'TunerBusy', code: -8, record: false, error: true, description: 'Tuner Busy'},
+  {status: 'LowDiskSpace', code: -7, record: false, error: true, description: 'Low Disk Space'},
+  {status: 'Cancelled', code: -6, record: false, error: false, description: 'Cancelled'},
+  {status: 'Missed', code: -5, record: false, error: false, description: 'Missed'},
+  {status: 'Aborted', code: -4, record: false, error: false, description: 'Aborted'},
+  {status: 'Recorded', code: -3, record: true, error: false, description: 'Recorded'},
+  {status: 'Recording', code: -2, record: true, error: false, description: 'Recording'},
+  {status: 'WillRecord', code: -1, record: true, error: false, description: 'Will Record'},
+  {status: 'Unknown', code: 0, record: false, error: false, description: ''},
+  {status: 'DontRecord', code: 1, record: false, error: false, description: "Don't Record"},
+  {status: 'PreviousRecording', code: 2, record: false, error: false, description: 'Previous Recording'},
+  {status: 'CurrentRecording', code: 3, record: false, error: false, description: 'Current Recording'},
+  {status: 'EarlierShowing', code: 4, record: false, error: false, description: 'Earlier Showing'},
+  {status: 'TooManyRecordings', code: 5, record: false, error: false, description: 'Too Many Recordings'},
+  {status: 'NotListed', code: 6, record: false, error: true, description: 'Not Listed'},
+  {status: 'Conflict', code: 7, record: false, error: false, description: 'Conflict'},
+  {status: 'LaterShowing', code: 8, record: false, error: false, description: 'Later Showing'},
+  {status: 'Repeat', code: 9, record: false, error: false, description: 'Repeat'},
+  {status: 'Inactive', code: 10, record: false, error: false, description: 'Inactive'},
+  {status: 'NeverRecord', code: 11, record: false, error: false, description: 'Never Record'},
+  {status: 'Offline', code: 12, record: false, error: true, description: 'Recorder Offline'}
 ]);
 
 epgApp.config(['$compileProvider', function($compileProvider) {
@@ -423,31 +398,6 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
                   var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
                   $http.get(upcomingUrl).success(function(data, status, headers, config) {
                     console.log('upcoming list response time: ' + config.responseTime);
-                    // update all guide data for matching titles per upcoming recordings (consider omitting title match) 
-                    var upcoming = data.ProgramList.Programs;
-                    var upcomingForTitle = [];
-                    for (var i = 0; i < upcoming.length; i++) {
-                      if (upcoming[i].Title == scope.program.Title)
-                        upcomingForTitle.push(upcoming[i]);
-                    }
-                    for (var chanNum in scope.guideData.channels) {
-                      for (var startTime in scope.guideData.channels[chanNum].programs) {
-                        var prog = scope.guideData.channels[chanNum].programs[startTime];
-                        if (prog.Title == scope.program.Title) {
-                          var foundUpcoming = null;
-                          for (var i = 0; i < upcomingForTitle.length; i++) {
-                            var upProg = upcomingForTitle[i];
-                            if (upProg.StartTime == prog.StartTime && upProg.Channel.ChanId == prog.channel.ChanId) {
-                              foundUpcoming = upProg;
-                            }
-                          }
-                          if (foundUpcoming == null)
-                            prog.recStatus = RECORD_STATUSES[12];
-                          else
-                            prog.recStatus = scope.recordStatus(foundUpcoming.Recording.Status);
-                        }
-                      }
-                    }
                     //scope.applyRecStatusUpdates(scope.program.Title, data.ProgramList);
                   }).error(function(data, status) {
                     console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
@@ -462,7 +412,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
                 var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
                 $http.get(upcomingUrl).success(function(data, status, headers, config) {
                   console.log('upcoming list response time: ' + config.responseTime);
-                  // update recording status for all matching programs in upcoming recordings
+                  // update recording status for all programs based on upcoming recordings
                   var upcoming = data.ProgramList.Programs;
                   for (var i = 0; i < upcoming.length; i++) {
                     var upProg = upcoming[i];
@@ -476,6 +426,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
                         var prog = chan.programs[upProg.StartTime];
                         if (prog && prog.Title == upProg.Title) {
                           prog.recStatus = scope.recordStatus(upProg.Recording.Status);
+                          console.log('program: ' + prog.id + ' recStatus: ' + prog.recStatus.code);
                         }
                       }
                     }
