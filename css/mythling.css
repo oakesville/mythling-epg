@@ -61,7 +61,8 @@ table {
   height: 24px;
   border: 1px solid #607d8b;
   border-radius: 3px;
-  background-color: #eceff1;  
+  background-color: #eceff1;
+  background: -webkit-linear-gradient(white, #cfd8dc);
   background: linear-gradient(to top, #cfd8dc, white);
   box-shadow: 2px 1px 4px #424242;  
 }
@@ -156,6 +157,7 @@ table {
   height: 100%;
   width: 100%;
   background-color: #f2f5f7;
+  background: -webkit-linear-gradient(white, #cfd8dc);  
   background: linear-gradient(to top, #cfd8dc, white);
   cursor: pointer;
   outline: none;
@@ -168,6 +170,7 @@ table {
   padding: 0;
   border: 2px solid black;
   background-color: #90caf9;
+  background: -webkit-linear-gradient(#bbdefb, #64b5f6);
   background: linear-gradient(to top, #64b5f6, #bbdefb);
 }
 .program-title {
@@ -177,18 +180,22 @@ table {
   padding: 0;
   border: 2px solid black;
   background-color: #90caf9;
+  background: -webkit-linear-gradient(#bbdefb, #64b5f6);
   background: linear-gradient(to top, #64b5f6, #bbdefb);
 }
 .program-record {
   background-color: #80cbc4;
+  background: -webkit-linear-gradient(#e0f2f1, #80cbc4);
   background: linear-gradient(to top, #80cbc4, #e0f2f1);
 }
 .program-error {
   background-color: #ef9a9a;
+  background: -webkit-linear-gradient(#ffebee, #ef9a9a);
   background: linear-gradient(to top, #ef9a9a, #ffebee);
 }
 .program-warn {
   background-color: #fff176;
+  background: -webkit-linear-gradient(#fffde7, #fff176);
   background: linear-gradient(to top, #fff176, #fffde7);
 }
 .program-details {
@@ -222,7 +229,6 @@ table {
 .modal-button {
   background-color: #e8e8e9;
   padding: 6px 8px;
-  /* background: linear-gradient(to top, #eceff1, #b0bec5); */
 }
 .search-popover {
   background-color: white;
@@ -301,7 +307,8 @@ table {
   border-radius: 2px;
 }
 .input-warn {
-  background-color: #80deea;  
+  background-color: #80deea;
+  background: -webkit-linear-gradient(#e0f7fa, #4dd0e1);  
   background: linear-gradient(to top, #4dd0e1, #e0f7fa); 
 }
 
@@ -318,6 +325,7 @@ table {
   height: 100%;
   border: none;
   padding: 0;
+  background: -webkit-linear-gradient(white, #cfd8dc);   
   background: linear-gradient(to top, #cfd8dc, white);  
 }
 
@@ -362,6 +370,7 @@ table {
 .modal-header {
   padding: 10px;
   background-color: #b0bec5;
+  background: -webkit-linear-gradient(#90a4ae, #eceff1);  
   background: linear-gradient(to top, #eceff1, #90a4ae);
   white-space: nowrap;
 }
@@ -385,6 +394,7 @@ table {
 .panel-heading {
   padding: 5px;
   background-color: #b0bec5;
+  background: -webkit-linear-gradient(#90a4ae, #eceff1);  
   background: linear-gradient(to top, #eceff1, #90a4ae);
 }
 .panel-heading a {
