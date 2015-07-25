@@ -122,6 +122,7 @@ epgApp.controller('EpgController',
   var channelGroupId = params.channelGroupId ? parseInt(params.channelGroupId) : 0;
   var mythlingServices = params.mythlingServices ? params.mythlingServices == 'true' : false;
   var demoMode = params.demoMode ? params.demoMode == 'true' : false;
+  $scope.revertLabelsToFixed = params.revertLabelsToFixed ? parseInt(params.revertLabelsToFixed) : 0; // ms till revert to fixed
   
   $scope.guideData = new GuideData(startTime, $scope.slotWidth, guideInterval, awaitPrime, guideHistory, channelGroupId, mythlingServices, demoMode);
   
@@ -435,20 +436,19 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
                         var prog = scope.guideData.channels[chanNum].programs[startTime];
                         if (prog.Title == scope.program.Title) {
                           var foundUpcoming = null;
-                          for (var i = 0; i < upcomingForTitle.length; i++) {
-                            var upProg = upcomingForTitle[i];
+                          for (var j = 0; j < upcomingForTitle.length; j++) {
+                            var upProg = upcomingForTitle[j];
                             if (upProg.StartTime == prog.StartTime && upProg.Channel.ChanId == prog.channel.ChanId) {
                               foundUpcoming = upProg;
                             }
                           }
-                          if (foundUpcoming == null)
+                          if (foundUpcoming === null)
                             prog.recStatus = RECORD_STATUSES[12];
                           else
                             prog.recStatus = scope.recordStatus(foundUpcoming.Recording.Status);
                         }
                       }
                     }
-                    //scope.applyRecStatusUpdates(scope.program.Title, data.ProgramList);
                   }).error(function(data, status) {
                     console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
                   });

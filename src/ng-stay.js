@@ -89,8 +89,11 @@ stayMod.directive('stay', ['$window', '$timeout', function($window, $timeout) {
           oldScTop = scTop;
         }
         
-        if (attrs.stayRevertToFixed)
-          scrollTimeout = $timeout(scrollCheck, parseInt(attrs.stayRevertToFixed));
+        if (attrs.stayRevertToFixed) {
+          var revertMs = parseInt(attrs.stayRevertToFixed);
+          if (revertMs > 0)
+            scrollTimeout = $timeout(scrollCheck, revertMs);
+        }
       };
 
       angular.element($window).bind('scroll', scrollHandler);

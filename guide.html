@@ -39,13 +39,13 @@
     </div>
   </div>
 
-  <div class="timeslot-row" stay="top" ng-style="::{left:labelWidth+'px'}">
+  <div class="timeslot-row" stay="top" stay-revert-to-fixed="{{revertLabelsToFixed}}" ng-style="::{left:labelWidth+'px'}">
     <div class="timeslot-outer slot-width header-height" ng-repeat="timeslot in guideData.timeslots track by $index" >
       <div class="timeslot">{{timeslot}}</div>
     </div>
   </div>
     
-  <div class="channel-column" stay="left" stay-track="setPosition" ng-style="::{top:headerHeight+'px'}">
+  <div class="channel-column" stay="left" stay-revert-to-fixed="{{revertLabelsToFixed}}" stay-track="setPosition" ng-style="::{top:headerHeight+'px'}">
     <div class="channel-outer label-width row-height" ng-repeat="channel in guideData.channels">
       <div class="channel">
         {{::channel.ChanNum}}<br/>{{::channel.CallSign}}
