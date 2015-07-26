@@ -117,7 +117,7 @@ epgApp.controller('EpgController',
   console.log('startTime: ' + startTime);
   var guideInterval = params.guideInterval ? parseInt(params.guideInterval) : 12; // hours
   var guideHistory = params.guideHistory ? parseInt(params.guideHistory) : 0; // hours (must be less than interval)
-  $scope.bufferSize = params.bufferSize ? parseInt(params.bufferSize) : 6; // screen widths (say, around 2 hours per)
+  $scope.bufferSize = params.bufferSize ? parseInt(params.bufferSize) : 8; // screen widths (say, around 2 hours per)
   var awaitPrime = params.awaitPrime ? params.awaitPrime == 'true' : false; // whether to disable mobile scroll until loaded
   var channelGroupId = params.channelGroupId ? parseInt(params.channelGroupId) : 0;
   var mythlingServices = params.mythlingServices ? params.mythlingServices == 'true' : false;
@@ -257,7 +257,6 @@ epgApp.controller('EpgController',
         $timeout(function() {
           var progElem = document.getElementById(program.id);
           angular.element(progElem).removeClass('program-select');
-          progElem.focus();
         }, 0);    
       });
     });

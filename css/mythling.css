@@ -205,8 +205,7 @@ table {
 	float: left;
 	font-size: 14px;
 	font-weight: bold;
-	margin-top: 6px;
-	margin-right: 5px;
+	margin: 10px 5px 0 5px;
 }
 .details-record {
 	color: #009688;
@@ -229,6 +228,7 @@ table {
 .modal-button {
   background-color: #e8e8e9;
   padding: 6px 8px;
+  margin-top: 5px;
 }
 .search-popover {
   background-color: white;
@@ -387,9 +387,8 @@ table {
   margin: 0 0 5px;
 }
 .modal-footer {
-  margin-top: 5px;
-  padding-left: 10px;
-  white-space: nowrap;
+  margin-top: 10px;
+  padding: 5px 10px 15px 5px;
 }
 .panel-heading {
   padding: 5px;
