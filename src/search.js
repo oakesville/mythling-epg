@@ -77,9 +77,10 @@ epgSearch.factory('search', ['$http', '$q', function($http, $q) {
     hasProgram: function(prog) {
       for (var i = 0; i < this.programs.length; i++) {
         var program = this.programs[i];
-        if (program.ChanId == prog.ChanId && program.StartTime == prog.StartTime)
+        if (program.StartTime == prog.StartTime && program.Channel.ChanId == prog.Channel.ChanId)
           return true;
       }
+      return false;
     }
   };
   
