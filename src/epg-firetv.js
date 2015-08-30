@@ -7,11 +7,25 @@ var calendarBtnClick = function(event) {
   setPopupOpen();
 };
 
+var searchInputChange = function(event) {
+  var searchFwdBtn = document.getElementById('searchForwardBtn');
+  searchFwdBtn.focus();
+  searchFwdBtn.click();
+}
+
 var searchOpen = false;
+var searchInputHandlerAdded = false;
 var searchBtnClick = function(event) {
   searchOpen = !searchOpen;
   console.log('searchOpen: ' + searchOpen);
   setPopupOpen();
+  if (!searchInputHandlerAdded) {
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput != null) { // may be result of pre-open
+      searchInput.addEventListener('change', searchInputChange);
+      searchInputHandlerAdded = true;
+    }
+  }
 };
 
 var menuOpen = false;
@@ -36,8 +50,8 @@ function setPopupOpen() {
 
 document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
-  document.getElementById('calendarBtn').addEventListener("click", calendarBtnClick);
-  document.getElementById('searchBtn').addEventListener("click", searchBtnClick);
+  document.getElementById('calendarBtn').addEventListener('click', calendarBtnClick);
+  document.getElementById('searchBtn').addEventListener('click', searchBtnClick);
 });
 
 document.addEventListener('epgAction', function(event) {
