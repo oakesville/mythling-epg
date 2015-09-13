@@ -185,6 +185,8 @@ epgApp.controller('EpgController',
       angular.element(document.getElementById(program.id)).addClass('program-select');
     }, 0);
     
+    $scope.fireEpgAction('details');
+    
     if ($scope.guideData.demoMode) {
       $scope.program = program;
       var modalInstance = $modal.open({
@@ -271,7 +273,7 @@ epgApp.controller('EpgController',
   
   $scope.fireEpgAction = function(name) {
     if (typeof CustomEvent == 'function')
-      document.dispatchEvent(new CustomEvent('epgAction', {'name': name})); // enable outside listeners
+      document.dispatchEvent(new CustomEvent('epgAction', {'details': name})); // enable outside listeners
   };
   
   if ($scope.bufferSize === 0)

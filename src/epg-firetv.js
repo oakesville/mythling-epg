@@ -53,6 +53,8 @@ function programKey(event) {
   }
 }
 
+var detailsOpen = false;
+
 function setPopup() {
   var openPopup = null;
   if (searchOpen)
@@ -61,6 +63,8 @@ function setPopup() {
     openPopup = 'calendar';
   else if (menuOpen)
     openPopup = 'menu';
+  else if (detailsOpen)
+    openPopup = 'details';
   jsHandler.setPopup(openPopup);  
 }
 
@@ -71,12 +75,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
 });
 
 document.addEventListener('epgAction', function(event) {
-  console.log('popupsClosed');
+  console.log("EVENT NAME: " + event.name);
   if (menuOpen && menuProgId !== null) {
     var progElem = document.getElementById(menuProgId);
-    if (event.name == 'close')
+    if (event.details == 'close')
       progElem.focus();
   }
+  detailsOpen = (event.details === 'details');
   searchOpen = calendarOpen = menuOpen = false;
   setPopup();
 });
@@ -212,6 +217,9 @@ function closePopups() {
     progElem.parentElement.click();
     menuOpen = false;
     console.log('menuOpen: ' + menuOpen);
+  }
+  if (detailsOpen) {
+    document.getElementById('detailsCloseBtn').click();
   }
     
 }
