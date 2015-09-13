@@ -273,7 +273,7 @@ epgApp.controller('EpgController',
   
   $scope.fireEpgAction = function(name) {
     if (typeof CustomEvent == 'function')
-      document.dispatchEvent(new CustomEvent('epgAction', {'details': name})); // enable outside listeners
+      document.dispatchEvent(new CustomEvent('epgAction', {'detail': name})); // enable outside listeners
   };
   
   if ($scope.bufferSize === 0)

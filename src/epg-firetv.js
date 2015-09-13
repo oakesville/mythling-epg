@@ -75,13 +75,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
 });
 
 document.addEventListener('epgAction', function(event) {
-  console.log("EVENT NAME: " + event.name);
   if (menuOpen && menuProgId !== null) {
     var progElem = document.getElementById(menuProgId);
-    if (event.details == 'close')
+    if (event.detail === 'close')
       progElem.focus();
   }
-  detailsOpen = (event.details === 'details');
+  detailsOpen = (event.detail === 'details');
   searchOpen = calendarOpen = menuOpen = false;
   setPopup();
 });
