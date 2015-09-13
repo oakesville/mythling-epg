@@ -4,7 +4,7 @@ var calendarOpen = false;
 var calendarBtnClick = function(event) {
   calendarOpen = !calendarOpen;
   console.log('calendarOpen: ' + calendarOpen);
-  setPopupOpen();
+  setPopup();
 };
 
 var searchInputChange = function(event) {
@@ -18,7 +18,7 @@ var searchInputHandlerAdded = false;
 var searchBtnClick = function(event) {
   searchOpen = !searchOpen;
   console.log('searchOpen: ' + searchOpen);
-  setPopupOpen();
+  setPopup();
   if (!searchInputHandlerAdded) {
     var searchInput = document.getElementById('searchInput');
     if (searchInput != null) { // may be result of pre-open
@@ -36,16 +36,32 @@ function programKey(event) {
     event.stopPropagation();
     menuOpen = !menuOpen;
     console.log('menuOpen: ' + menuOpen);
-    setPopupOpen();
+    setPopup();
     var progElem = event.target;
     if (menuOpen)
       menuProgId = progElem.id;
     progElem.parentElement.click();
+    if (menuOpen) {
+      setTimeout(function(){ 
+        var menuItem = document.getElementById('menu-details');
+        var ulElem = menuItem.parentElement.parentElement; 
+        var items = ulElem.querySelectorAll('li > a').length;
+        jsHandler.setMenuItems(items);
+        menuItem.focus();
+      }, 0);
+    }
   }
 }
 
-function setPopupOpen() {
-  jsHandler.setPopupOpen(searchOpen || calendarOpen || menuOpen);  
+function setPopup() {
+  var openPopup = null;
+  if (searchOpen)
+    openPopup = 'search';
+  else if (calendarOpen)
+    openPopup = 'calendar';
+  else if (menuOpen)
+    openPopup = 'menu';
+  jsHandler.setPopup(openPopup);  
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
@@ -62,7 +78,7 @@ document.addEventListener('epgAction', function(event) {
       progElem.focus();
   }
   searchOpen = calendarOpen = menuOpen = false;
-  setPopupOpen();
+  setPopup();
 });
 
 var offset = 0;
@@ -164,12 +180,14 @@ function webViewKey(key) {
       }
     }
     
-    if (oldFocused !== null && oldFocused.id && oldFocused.id.startsWith('ch')) {
-      oldFocused.removeEventListener('keypress', programKey);
-      
-    }
-    if (focused.id && focused.id.startsWith('ch')) {
-      focused.addEventListener('keypress', programKey);      
+    if (focused !== null) {
+      if (oldFocused !== null && oldFocused.id && oldFocused.id.startsWith('ch')) {
+        oldFocused.removeEventListener('keypress', programKey);
+        
+      }
+      if (focused.id && focused.id.startsWith('ch')) {
+        focused.addEventListener('keypress', programKey);
+      }
     }
   }
 
