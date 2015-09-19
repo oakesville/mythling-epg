@@ -117,7 +117,6 @@ function getChanProgElementForOffset(chanIdx, offset) {
     if (progOffset >= offset)
       break;
   }
-  console.log('found: ' + progElem.id);
   return progElem;
 }
 
