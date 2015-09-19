@@ -616,6 +616,8 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
         if (chan.Programs.length > 0) {
           chanIdx++;
           var chanNum = chan.ChanNum;
+          // replace non-digit (eg: underscore) with 0
+          chanNum = chanNum.replace(/[^0-9]+/g, '0');
           // pad to 4 digits to ensure proper sorting by chanNum
           while (chanNum.length < 4)
             chanNum = '0' + chanNum;
