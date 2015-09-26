@@ -1,4 +1,4 @@
-/*! mythling-epg v1.2.0
+/*! mythling-epg v1.2.01
  *  Copyright 2015 Donald Oakes
  *  License: Apache-2.0 */
 'use strict';
@@ -475,10 +475,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
                   for (var i = 0; i < upcoming.length; i++) {
                     var upProg = upcoming[i];
                     if (upProg.Title == scope.program.Title) {
-                      var chanNum = upProg.Channel.ChanNum;
-                      // pad to 4 digits
-                      while (chanNum.length < 4)
-                        chanNum = '0' + chanNum;
+                      var chanNum = scope.guideData.getChanNumIndex(upProg.Channel);
                       var chan = scope.guideData.channels[chanNum];
                       if (chan) {
                         var prog = chan.programs[upProg.StartTime];
