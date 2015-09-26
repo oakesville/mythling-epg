@@ -61,8 +61,8 @@
     <div class="channel-row" ng-repeat="channel in guideData.channels">
       <div class="program-outer" ng-repeat="program in channel.programs">
         <div class="program row-height" popover-template="'views/menu.html'" popover-trigger="popShow" popover-placement="{{popPlace}}"
-          pop-click ng-style="::{width:program.width+'px'}">
-          <div id="{{::program.id}}" class="program-inner" tabIndex="{{::program.index}}" 
+          pop-click ng-style="{width:program.width+'px'}">
+          <div ng-if="!program.filler" id="{{::program.id}}" class="program-inner" tabIndex="{{::program.index}}" 
             ng-class="{'program-record': program.recStatus.record, 'program-error': program.recStatus.error, 'program-warn': program.recStatus.code == 7}" 
             data-seq="{{::program.seq}}" data-offset="{{::program.offset}}">
             <span class="program-title">{{::program.Title}}</span><br/>{{::program.subTitle}}

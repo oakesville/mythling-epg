@@ -609,61 +609,81 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
         console.log('MythTV version ' + this.mythVersion);
         this.isMyth28 = !this.mythVersion.startsWith('0.27');
       }
+      
       var chans = data.ProgramGuide.Channels;
+      
+      // insert channels missing from this retrieval (due to missing data)
+      for (var chanNum in this.channels) {
+        var found = false;
+        for (var i = 0; i < chans.length; i++) {
+          if (chans[i].ChanNum == this.channels[chanNum].ChanNum) {
+            found = true;
+            break;
+          }
+        }
+        if (!found)
+          chans.push(this.channels[chanNum]);
+      }
+      
       var chanIdx = 0;
       for (var i = 0; i < chans.length; i++) {
         var chan = chans[i];
-        if (chan.Programs.length > 0) {
-          chanIdx++;
-          var chanNum = chan.ChanNum;
-          // replace underscore or dot
-          if (chanNum.indexOf('_') >= 0 || chanNum.indexOf('.') >= 0)
-            chanNum = chanNum.replace(/[\._]/, '');
-          else
-            chanNum += '0';
-          // pad to 5 digits to ensure proper sorting by chanNum
-          while (chanNum.length < 5)
-            chanNum = '0' + chanNum;
-          if (!(chanNum in this.channels)) {
-            chan.programs = {};
-            chan.progSize = 0;
-            chan.progOffset = 0;
-            this.channels[chanNum] = chan;
-          }          
-          var channel = this.channels[chanNum];
+        chanIdx++;
+        var chanNum = this.getChanNumIndex(chan);
+        // do not add new channels discovered when scrolling
+        if (!(chanNum in this.channels) && (this.startTime.getTime() == this.beginTime.getTime())) {
+          chan.programs = {};
+          chan.progSize = 0;
+          chan.progOffset = 0;
+          this.channels[chanNum] = chan;
+        }          
+        var channel = this.channels[chanNum];
+        if (channel != null) {  // null if new channel during scrolling
+          var prevProgEnd = this.startTime;
           for (var j = 0; j < chan.Programs.length; j++) {
             var prog = chan.Programs[j];
+            var startTime = prog.StartTime;
+            var start = new Date(prog.StartTime);
             var end = new Date(prog.EndTime);
-            if (end.getTime() > this.startTime.getTime() - this.history) { // ignore programs that already ended
-              var startTime = prog.StartTime;
-              if (!(startTime in channel.programs)) {
-                channel.programs[startTime] = prog;
-                channel.progSize++;
-                var start = new Date(prog.StartTime);
-                // don't start before start time or end after end time
-                var slotsStartTime = start.getTime() < this.startTime.getTime() ? this.startTime.getTime() : start.getTime();
-                var slotsEndTime = end.getTime() > this.endTime.getTime() ? this.endTime.getTime() : end.getTime();
-                var slots = (slotsEndTime - slotsStartTime) / 1800000;
-                prog.start = start;
-                prog.end = end;
-                prog.offset = channel.progOffset;
-                prog.width = Math.round(this.slotWidth * slots);
-                prog.subTitle = prog.SubTitle ? '"' + prog.SubTitle + '"' : '';
-                if (prog.Recording && prog.Recording.Status) {
-                  var recCode = parseInt(prog.Recording.Status);
-                  for (var k = 0; k < RECORD_STATUSES.length; k++) {
-                    if (RECORD_STATUSES[k].code == recCode)
-                      prog.recStatus = RECORD_STATUSES[k];
-                  }
+            // ignore programs that already ended or start after range
+            if ((end.getTime() > this.startTime.getTime() - this.history) && (start.getTime() < this.endTime.getTime())) { 
+              channel.programs[startTime] = prog;
+
+              // account for gaps in data
+              if (start.getTime() > prevProgEnd.getTime())
+                this.addFiller(channel, prevProgEnd, start);
+              prevProgEnd = end;
+              
+              // don't start before begin time or end after end time
+              var slotsStartTime = start.getTime() < this.beginTime.getTime() ? this.startTime.getTime() : start.getTime();
+              var slotsEndTime = end.getTime() > this.endTime.getTime() ? this.endTime.getTime() : end.getTime();
+              var slots = (slotsEndTime - slotsStartTime) / 1800000;
+              prog.start = start;
+              prog.end = end;
+              prog.offset = channel.progOffset;
+              prog.width = Math.round(this.slotWidth * slots);
+              prog.subTitle = prog.SubTitle ? '"' + prog.SubTitle + '"' : '';
+              if (prog.Recording && prog.Recording.Status) {
+                var recCode = parseInt(prog.Recording.Status);
+                for (var k = 0; k < RECORD_STATUSES.length; k++) {
+                  if (RECORD_STATUSES[k].code == recCode)
+                    prog.recStatus = RECORD_STATUSES[k];
                 }
-                prog.channel = channel;
-                prog.id = 'ch' + channel.ChanId + 'pr' + prog.StartTime;
-                prog.seq = 'ch' + chanIdx + 'pr' + channel.progSize;
-                prog.index = this.index++;
-                channel.progOffset += prog.width;
               }
+              prog.channel = channel;
+              channel.progSize++;
+              prog.id = 'ch' + channel.ChanId + 'pr' + prog.StartTime;
+              prog.seq = 'ch' + chanIdx + 'pr' + channel.progSize;
+              prog.index = this.index++;
+              channel.progOffset += prog.width;
             }
           }
+          
+          // account for gaps in data
+          if (this.endTime.getTime() > prevProgEnd.getTime()) {
+            console.log('2 -');
+              this.addFiller(channel, prevProgEnd, this.endTime);
+          }              
         }
       }
       
@@ -707,6 +727,38 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
       
     }.bind(this));
   };
+  
+  // channel object index for proper sorting
+  GuideData.prototype.getChanNumIndex = function(channel) {
+    var chanNum = channel.ChanNum;
+    // replace underscore or dot
+    if (chanNum.indexOf('_') >= 0 || chanNum.indexOf('.') >= 0)
+      chanNum = chanNum.replace(/[\._]/, '');
+    else
+      chanNum += '0';
+    // pad to 5 digits to ensure proper sorting by chanNum
+    while (chanNum.length < 5)
+      chanNum = '0' + chanNum;
+    return chanNum;
+  };
+  
+  GuideData.prototype.addFiller = function(channel, start, end) {
+    console.log(ERROR_TAG + 'Missing Data for Channel ' + channel.ChanNum + ': ' + start + ' -> ' + end);
+    var fillerStart = start.toISOString();
+    channel.progSize++;
+    var fillerProg = {
+      filler: true,
+      offset: channel.progOffset,
+      Title: '',
+      SubTitle: '',
+      channel: channel
+    };
+    
+    fillerProg.width = Math.round((end.getTime() - start.getTime()) * this.slotWidth / 1800000);
+    channel.progOffset += fillerProg.width;
+    channel.programs[fillerStart] = fillerProg;
+  };
+  
   
   return GuideData;
 }]);
