@@ -637,8 +637,10 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
                 channel.programs[startTime] = prog;
                 channel.progSize++;
                 var start = new Date(prog.StartTime);
+                // don't start before start time or end after end time
                 var slotsStartTime = start.getTime() < this.startTime.getTime() ? this.startTime.getTime() : start.getTime();
-                var slots = (end.getTime() - slotsStartTime) / 1800000;
+                var slotsEndTime = end.getTime() > this.endTime.getTime() ? this.endTime.getTime() : end.getTime();
+                var slots = (slotsEndTime - slotsStartTime) / 1800000;
                 prog.start = start;
                 prog.end = end;
                 prog.offset = channel.progOffset;
