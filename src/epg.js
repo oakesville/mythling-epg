@@ -625,7 +625,7 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
           this.channels[chanNum] = chan;
         }          
         var channel = this.channels[chanNum];
-        if (channel !== null) {  // null if new channel during scrolling
+        if (typeof channel !== 'undefined' && channel !== null) {  // if new channel during scrolling
           var prevProgEnd = this.startTime;
           for (var j = 0; j < chan.Programs.length; j++) {
             var prog = chan.Programs[j];
@@ -636,15 +636,16 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
             if ((end.getTime() > this.startTime.getTime() - this.history) && (start.getTime() < this.endTime.getTime())) { 
               channel.programs[startTime] = prog;
 
-              // account for gaps in data
-              if (start.getTime() > prevProgEnd.getTime())
-                this.addFiller(channel, prevProgEnd, start);
-              prevProgEnd = end;
-              
               // don't start before begin time or end after end time
               var slotsStartTime = start.getTime() < this.beginTime.getTime() ? this.startTime.getTime() : start.getTime();
               var slotsEndTime = end.getTime() > this.endTime.getTime() ? this.endTime.getTime() : end.getTime();
               var slots = (slotsEndTime - slotsStartTime) / 1800000;
+
+              // account for gaps in data
+              if (slotsStartTime > prevProgEnd.getTime())
+                this.addFiller(channel, prevProgEnd, new Date(slotsStartTime));
+              prevProgEnd = end;
+              
               prog.start = start;
               prog.end = end;
               prog.offset = channel.progOffset;
@@ -668,8 +669,19 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
           
           // account for gaps in data
           if (this.endTime.getTime() > prevProgEnd.getTime()) {
-            console.log('2 -');
-              this.addFiller(channel, prevProgEnd, this.endTime);
+            var fillerProg = this.addFiller(channel, prevProgEnd, this.endTime);
+            if (prevProgEnd.getTime() == this.startTime.getTime() && this.beginTime.getTime() == this.startTime.getTime()) {
+              // entire channel row missing -- insert blank to fix guide appearance
+              var blankProg = {
+                Title: '',
+                SubTitle: '',
+                channel: channel
+              };
+              
+              blankProg.width = 0;
+              channel.programs[this.startTime.toISOString()] = blankProg;
+              channel.programs[new Date(this.startTime.getTime() + 1000).toISOString()] = fillerProg;
+            }
           }              
         }
       }
@@ -758,6 +770,7 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
     fillerProg.width = Math.round((end.getTime() - start.getTime()) * this.slotWidth / 1800000);
     channel.progOffset += fillerProg.width;
     channel.programs[fillerStart] = fillerProg;
+    return fillerProg;
   };
   
   
