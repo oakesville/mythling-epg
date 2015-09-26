@@ -616,10 +616,13 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
         if (chan.Programs.length > 0) {
           chanIdx++;
           var chanNum = chan.ChanNum;
-          // replace non-digit (eg: underscore) with 0
-          chanNum = chanNum.replace(/[^0-9]+/g, '0');
-          // pad to 4 digits to ensure proper sorting by chanNum
-          while (chanNum.length < 4)
+          // replace underscore or dot
+          if (chanNum.indexOf('_') >= 0 || chanNum.indexOf('.') >= 0)
+            chanNum = chanNum.replace(/[\._]/, '');
+          else
+            chanNum += '0';
+          // pad to 5 digits to ensure proper sorting by chanNum
+          while (chanNum.length < 5)
             chanNum = '0' + chanNum;
           if (!(chanNum in this.channels)) {
             chan.programs = {};
