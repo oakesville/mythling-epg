@@ -613,17 +613,7 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
       var chans = data.ProgramGuide.Channels;
       
       // insert channels missing from this retrieval (due to missing data)
-      for (var chanNum in this.channels) {
-        var found = false;
-        for (var i = 0; i < chans.length; i++) {
-          if (chans[i].ChanNum == this.channels[chanNum].ChanNum) {
-            found = true;
-            break;
-          }
-        }
-        if (!found)
-          chans.push(this.channels[chanNum]);
-      }
+      this.addMissingChannelsTo(chans);
       
       var chanIdx = 0;
       for (var i = 0; i < chans.length; i++) {
@@ -638,7 +628,7 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
           this.channels[chanNum] = chan;
         }          
         var channel = this.channels[chanNum];
-        if (channel != null) {  // null if new channel during scrolling
+        if (channel !== null) {  // null if new channel during scrolling
           var prevProgEnd = this.startTime;
           for (var j = 0; j < chan.Programs.length; j++) {
             var prog = chan.Programs[j];
@@ -740,6 +730,20 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
     while (chanNum.length < 5)
       chanNum = '0' + chanNum;
     return chanNum;
+  };
+  
+  GuideData.prototype.addMissingChannelsTo = function(chans) {
+    for (var chanNum in this.channels) {
+      var found = false;
+      for (var i = 0; i < chans.length; i++) {
+        if (chans[i].ChanNum == this.channels[chanNum].ChanNum) {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        chans.push(this.channels[chanNum]);
+    }
   };
   
   GuideData.prototype.addFiller = function(channel, start, end) {

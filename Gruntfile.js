@@ -42,7 +42,8 @@ module.exports = function(grunt) {
           CustomEvent: true,
           angular: false,
           jsHandler: false,
-          setPosition: true
+          setPosition: true,
+          setTimeout: true
         }
       }
     },

@@ -11,7 +11,7 @@ var searchInputChange = function(event) {
   var searchFwdBtn = document.getElementById('searchForwardBtn');
   searchFwdBtn.focus();
   searchFwdBtn.click();
-}
+};
 
 var searchOpen = false;
 var searchInputHandlerAdded = false;
@@ -21,7 +21,7 @@ var searchBtnClick = function(event) {
   setPopup();
   if (!searchInputHandlerAdded) {
     var searchInput = document.getElementById('searchInput');
-    if (searchInput != null) { // may be result of pre-open
+    if (searchInput !== null) { // may be result of pre-open
       searchInput.addEventListener('change', searchInputChange);
       searchInputHandlerAdded = true;
     }
@@ -42,7 +42,7 @@ function programKey(event) {
       menuProgId = progElem.id;
     progElem.parentElement.click();
     if (menuOpen) {
-      setTimeout(function(){ 
+      setTimeout(function() { 
         var menuItem = document.getElementById('menu-details');
         var ulElem = menuItem.parentElement.parentElement; 
         var items = ulElem.querySelectorAll('li > a').length;
