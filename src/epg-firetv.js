@@ -102,6 +102,11 @@ function getOffset(progElem) {
   return parseInt(progElem.dataset.offset);
 }
 
+function getWidth(progElem) {
+  var w = progElem.parentElement.style.width;
+  return parseInt(w.substring(0, w.length - 2));
+}
+
 function getSiblingElementBySeq(progElem, seq) {
   var chanRowElem = progElem.parentElement.parentElement.parentElement; 
   return chanRowElem.querySelector('div[data-seq="' + seq + '"]');
@@ -124,11 +129,16 @@ function getChanProgElementForOffset(chanIdx, offset) {
   var progElem = null;
   for (var i = 0; i < chanProgElems.length; i++) {
     progElem = chanProgElems[i];
-    var w = progElem.parentElement.style.width;
-    var progOffset = parseInt(progElem.dataset.offset) + parseInt(w.substring(0, w.length - 2))/2;
+    var w = getWidth(progElem);
+    var progOffset = getOffset(progElem);
     if (debug)
       console.log('progOffset: ' + progOffset);
     if (progOffset >= offset)
+      break;
+    var progEndOffset = getOffset(progElem) + getWidth(progElem);
+    if (debug)
+      console.log('progEndOffset: ' + progEndOffset);
+    if (progEndOffset >= (offset + 83)) // ~10 minutes overlap
       break;
   }
   return progElem;
