@@ -1,9 +1,16 @@
 'use strict';
 
+var debug = false;
+var setDebug = function(isDebug) {
+  debug = isDebug;
+  console.log('debug: ' + debug);
+}
+
 var calendarOpen = false;
 var calendarBtnClick = function(event) {
   calendarOpen = !calendarOpen;
-  console.log('calendarOpen: ' + calendarOpen);
+  if (debug)
+    console.log('calendarOpen: ' + calendarOpen);
   setPopup();
 };
 
@@ -11,17 +18,18 @@ var searchInputChange = function(event) {
   var searchFwdBtn = document.getElementById('searchForwardBtn');
   searchFwdBtn.focus();
   searchFwdBtn.click();
-};
+}
 
 var searchOpen = false;
 var searchInputHandlerAdded = false;
 var searchBtnClick = function(event) {
   searchOpen = !searchOpen;
-  console.log('searchOpen: ' + searchOpen);
+  if (debug)
+    console.log('searchOpen: ' + searchOpen);
   setPopup();
   if (!searchInputHandlerAdded) {
     var searchInput = document.getElementById('searchInput');
-    if (searchInput !== null) { // may be result of pre-open
+    if (searchInput != null) { // may be result of pre-open
       searchInput.addEventListener('change', searchInputChange);
       searchInputHandlerAdded = true;
     }
@@ -35,14 +43,15 @@ function programKey(event) {
     event.preventDefault();
     event.stopPropagation();
     menuOpen = !menuOpen;
-    console.log('menuOpen: ' + menuOpen);
+    if (debug)
+      console.log('menuOpen: ' + menuOpen);
     setPopup();
     var progElem = event.target;
     if (menuOpen)
       menuProgId = progElem.id;
     progElem.parentElement.click();
     if (menuOpen) {
-      setTimeout(function() { 
+      setTimeout(function(){ 
         var menuItem = document.getElementById('menu-details');
         var ulElem = menuItem.parentElement.parentElement; 
         var items = ulElem.querySelectorAll('li > a').length;
@@ -99,13 +108,17 @@ function getSiblingElementBySeq(progElem, seq) {
 }
 
 function getChanProgElementForOffset(chanIdx, offset) {
-  console.log('offset: ' + offset);
-  console.log('querySel: ' + 'div[data-seq="ch' + chanIdx + 'pr1"]');
+  if (debug) {
+    console.log('offset: ' + offset);
+    console.log('querySel: ' + 'div[data-seq="ch' + chanIdx + 'pr1"]');
+  }
   var firstProgElem = document.querySelector('div[data-seq="ch' + chanIdx + 'pr1"]');
-  console.log('firstProgElem: ' + firstProgElem);
+  if (debug)
+    console.log('firstProgElem: ' + firstProgElem);
   if (!firstProgElem)
     return null;
-  console.log('firstProgElem.id: ' + firstProgElem.id);
+  if (debug)
+    console.log('firstProgElem.id: ' + firstProgElem.id);
   var chanRowElem = firstProgElem.parentElement.parentElement.parentElement;
   var chanProgElems = chanRowElem.querySelectorAll('div[data-seq]');
   var progElem = null;
@@ -113,7 +126,8 @@ function getChanProgElementForOffset(chanIdx, offset) {
     progElem = chanProgElems[i];
     var w = progElem.parentElement.style.width;
     var progOffset = parseInt(progElem.dataset.offset) + parseInt(w.substring(0, w.length - 2))/2;
-    console.log('progOffset: ' + progOffset);
+    if (debug)
+      console.log('progOffset: ' + progOffset);
     if (progOffset >= offset)
       break;
   }
@@ -123,7 +137,9 @@ function getChanProgElementForOffset(chanIdx, offset) {
 var focused = null;
 
 function webViewKey(key) {
-  console.log('webViewKey(): ' + key);
+  console.log("DEBUG: " + debug);
+  if (debug)
+    console.log('webViewKey(): ' + key);
   
   var foc = document.activeElement;
   if (foc && foc.id) {
@@ -196,7 +212,8 @@ function webViewKey(key) {
 
   if (focused !== null) {
     focused.focus();
-    console.log('new focused id: ' + focused.id);
+    if (debug)
+      console.log('new focused id: ' + focused.id);
   }
 }
 
@@ -214,7 +231,8 @@ function closePopups() {
     progElem.focus();
     progElem.parentElement.click();
     menuOpen = false;
-    console.log('menuOpen: ' + menuOpen);
+    if (debug)
+      console.log('menuOpen: ' + menuOpen);
   }
   if (detailsOpen) {
     document.getElementById('detailsCloseBtn').click();
