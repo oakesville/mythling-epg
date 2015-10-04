@@ -1,3 +1,7 @@
+/*! mythling-epg v1.2.01
+ *  Copyright 2015 Donald Oakes
+ *  License: Apache-2.0 */
+// TODO implement as an AngularJS module for generic key-handling
 'use strict';
 
 var debug = false;
@@ -35,6 +39,13 @@ var searchBtnClick = function(event) {
     }
   }
 };
+
+var searchForward = function() {
+  document.getElementById('searchForwardBtn').click();
+}
+var searchBackward = function() {
+  document.getElementById('searchBackwardBtn').click();
+}
 
 var menuOpen = false;
 var menuProgId = null;
