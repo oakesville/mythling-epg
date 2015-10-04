@@ -84,10 +84,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
 });
 
 document.addEventListener('epgAction', function(event) {
-  if (menuOpen && menuProgId !== null) {
+  if ((menuOpen || detailsOpen) && menuProgId !== null) {
     var progElem = document.getElementById(menuProgId);
     if (event.detail === 'close')
       progElem.focus();
+  }
+  else if (event.detail === 'calendar') {
+    setTimeout(function(){ 
+      console.log("FOCUSING CALBTN");
+      document.getElementById('calendarBtn').focus();
+    }, 0);
   }
   detailsOpen = (event.detail === 'details');
   searchOpen = calendarOpen = menuOpen = false;
@@ -147,7 +153,6 @@ function getChanProgElementForOffset(chanIdx, offset) {
 var focused = null;
 
 function webViewKey(key) {
-  console.log("DEBUG: " + debug);
   if (debug)
     console.log('webViewKey(): ' + key);
   
