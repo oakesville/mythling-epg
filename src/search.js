@@ -9,6 +9,7 @@ epgSearch.controller('EpgSearchController', ['$scope', '$timeout', 'search', fun
   $scope.searchOpened = false;
   $scope.searchClick = function($event) {
     $scope.searchOpened = !$scope.searchOpened;
+    $scope.fireEpgAction($scope.searchOpened ? 'open.search' : 'close.search');
   };
   
   $scope.searchForward = function() {
@@ -38,7 +39,6 @@ epgSearch.controller('EpgSearchController', ['$scope', '$timeout', 'search', fun
   
   $scope.closeSearch = function() {
     $timeout(function() {
-      $scope.fireEpgAction('search');
       document.getElementById('searchBtn').click();
     }, 5);
   };
@@ -93,7 +93,8 @@ epgSearch.factory('search', ['$http', '$q', function($http, $q) {
     var startTime = new Date();
     var baseUrl = mythlingServices ? '/mythling/media.php?type=guide&' : '/Guide/GetProgramList?';
     baseUrl += 'StartTime=' + startTime.toISOString();
-    console.log('search base url: ' + baseUrl);
+    if (epgDebug)
+      console.log('search base url: ' + baseUrl);
     
     var searches;
     if (mythlingServices) {

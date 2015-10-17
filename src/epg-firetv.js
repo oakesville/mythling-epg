@@ -1,39 +1,23 @@
 /*! mythling-epg v1.2.01
  *  Copyright 2015 Donald Oakes
  *  License: Apache-2.0 */
-// TODO implement as an AngularJS module for generic key-handling
 'use strict';
 
-var debug = false;
-var setDebug = function(isDebug) {
-  debug = isDebug;
-  console.log('debug: ' + debug);
-}
-
-var calendarOpen = false;
-var calendarBtnClick = function(event) {
-  calendarOpen = !calendarOpen;
-  if (debug)
-    console.log('calendarOpen: ' + calendarOpen);
-  setPopup();
-};
+document.addEventListener('DOMContentLoaded', function(event) {
+  document.getElementById('calendarBtn').focus();
+});
 
 var searchInputChange = function(event) {
   var searchFwdBtn = document.getElementById('searchForwardBtn');
   searchFwdBtn.focus();
   searchFwdBtn.click();
-}
+};
 
-var searchOpen = false;
 var searchInputHandlerAdded = false;
 var searchBtnClick = function(event) {
-  searchOpen = !searchOpen;
-  if (debug)
-    console.log('searchOpen: ' + searchOpen);
-  setPopup();
   if (!searchInputHandlerAdded) {
     var searchInput = document.getElementById('searchInput');
-    if (searchInput != null) { // may be result of pre-open
+    if (searchInput !== null) { // may be result of pre-open
       searchInput.addEventListener('change', searchInputChange);
       searchInputHandlerAdded = true;
     }
@@ -42,27 +26,15 @@ var searchBtnClick = function(event) {
 
 var searchForward = function() {
   document.getElementById('searchForwardBtn').click();
-}
+};
 var searchBackward = function() {
   document.getElementById('searchBackwardBtn').click();
-}
+};
 
-var menuOpen = false;
-var menuProgId = null;
 function programKey(event) {
   if (event.keyCode == 13) {  // enter
-    event.preventDefault();
-    event.stopPropagation();
-    menuOpen = !menuOpen;
-    if (debug)
-      console.log('menuOpen: ' + menuOpen);
-    setPopup();
-    var progElem = event.target;
-    if (menuOpen)
-      menuProgId = progElem.id;
-    progElem.parentElement.click();
     if (menuOpen) {
-      setTimeout(function(){ 
+      setTimeout(function() { 
         var menuItem = document.getElementById('menu-details');
         var ulElem = menuItem.parentElement.parentElement; 
         var items = ulElem.querySelectorAll('li > a').length;
@@ -73,42 +45,16 @@ function programKey(event) {
   }
 }
 
-var detailsOpen = false;
-
-function setPopup() {
-  var openPopup = null;
-  if (searchOpen)
-    openPopup = 'search';
-  else if (calendarOpen)
-    openPopup = 'calendar';
-  else if (menuOpen)
-    openPopup = 'menu';
-  else if (detailsOpen)
-    openPopup = 'details';
-  jsHandler.setPopup(openPopup);  
-}
-
 document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
-  document.getElementById('calendarBtn').addEventListener('click', calendarBtnClick);
-  document.getElementById('searchBtn').addEventListener('click', searchBtnClick);
 });
 
 document.addEventListener('epgAction', function(event) {
-  if ((menuOpen || detailsOpen) && menuProgId !== null) {
-    var progElem = document.getElementById(menuProgId);
-    if (event.detail === 'close')
-      progElem.focus();
-  }
-  else if (event.detail === 'calendar') {
-    setTimeout(function(){ 
-      console.log("FOCUSING CALBTN");
-      document.getElementById('calendarBtn').focus();
-    }, 0);
-  }
-  detailsOpen = (event.detail === 'details');
-  searchOpen = calendarOpen = menuOpen = false;
-  setPopup();
+//  if (event.detail == 'calendar') {
+//    setTimeout(function() { 
+//      document.getElementById('calendarBtn').focus();
+//    }, 0);
+//  }
 });
 
 var offset = 0;
@@ -130,16 +76,16 @@ function getSiblingElementBySeq(progElem, seq) {
 }
 
 function getChanProgElementForOffset(chanIdx, offset) {
-  if (debug) {
+  if (epgDebug) {
     console.log('offset: ' + offset);
     console.log('querySel: ' + 'div[data-seq="ch' + chanIdx + 'pr1"]');
   }
   var firstProgElem = document.querySelector('div[data-seq="ch' + chanIdx + 'pr1"]');
-  if (debug)
+  if (epgDebug)
     console.log('firstProgElem: ' + firstProgElem);
   if (!firstProgElem)
     return null;
-  if (debug)
+  if (epgDebug)
     console.log('firstProgElem.id: ' + firstProgElem.id);
   var chanRowElem = firstProgElem.parentElement.parentElement.parentElement;
   var chanProgElems = chanRowElem.querySelectorAll('div[data-seq]');
@@ -148,12 +94,12 @@ function getChanProgElementForOffset(chanIdx, offset) {
     progElem = chanProgElems[i];
     var w = getWidth(progElem);
     var progOffset = getOffset(progElem);
-    if (debug)
+    if (epgDebug)
       console.log('progOffset: ' + progOffset);
     if (progOffset >= offset)
       break;
     var progEndOffset = getOffset(progElem) + getWidth(progElem);
-    if (debug)
+    if (epgDebug)
       console.log('progEndOffset: ' + progEndOffset);
     if (progEndOffset >= (offset + 83)) // ~10 minutes overlap
       break;
@@ -164,7 +110,7 @@ function getChanProgElementForOffset(chanIdx, offset) {
 var focused = null;
 
 function webViewKey(key) {
-  if (debug)
+  if (epgDebug)
     console.log('webViewKey(): ' + key);
   
   var foc = document.activeElement;
@@ -238,30 +184,7 @@ function webViewKey(key) {
 
   if (focused !== null) {
     focused.focus();
-    if (debug)
+    if (epgDebug)
       console.log('new focused id: ' + focused.id);
   }
-}
-
-function closePopups() {
-  if (calendarOpen) {
-    var calBtn = document.getElementById('calendarBtn');
-    calBtn.click();
-    calBtn.focus();
-  }
-  if (searchOpen) {
-    document.getElementById('searchBtn').click();
-  }
-  if (menuOpen && menuProgId !== null) {
-    var progElem = document.getElementById(menuProgId);
-    progElem.focus();
-    progElem.parentElement.click();
-    menuOpen = false;
-    if (debug)
-      console.log('menuOpen: ' + menuOpen);
-  }
-  if (detailsOpen) {
-    document.getElementById('detailsCloseBtn').click();
-  }
-    
 }

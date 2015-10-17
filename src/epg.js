@@ -89,9 +89,6 @@ epgApp.controller('EpgController',
     ['$scope', '$window', '$http', '$timeout', '$location', '$modal', '$filter', 'GuideData', 'RECORD_STATUSES', 
     function($scope, $window, $http, $timeout, $location, $modal, $filter, GuideData, RECORD_STATUSES) {
 
-  console.log('userAgent: ' + $window.navigator.userAgent);
-  console.log('location: ' + $window.location);
-  
   // layout dimensions
   for (var i = 0; i < $window.document.styleSheets.length; i++) {
     var sheet = $window.document.styleSheets[i];
@@ -114,7 +111,6 @@ epgApp.controller('EpgController',
   // supportedParams
   var startTime = params.startTime ? new Date(params.startTime) : new Date();
   startTime = params.StartTime ? new Date(params.StartTime) : startTime; // support MythTV param name
-  console.log('startTime: ' + startTime);
   var guideInterval = params.guideInterval ? parseInt(params.guideInterval) : 12; // hours
   var guideHistory = params.guideHistory ? parseInt(params.guideHistory) : 0; // hours (must be less than interval)
   $scope.bufferSize = params.bufferSize ? parseInt(params.bufferSize) : 8; // screen widths (say, around 2 hours per)
@@ -123,6 +119,13 @@ epgApp.controller('EpgController',
   var mythlingServices = params.mythlingServices ? params.mythlingServices == 'true' : false;
   var demoMode = params.demoMode ? params.demoMode == 'true' : false;
   $scope.revertLabelsToFixed = params.revertLabelsToFixed ? parseInt(params.revertLabelsToFixed) : 0; // ms till revert to fixed
+  epgDebug = params.epgDebug ? params.epgDebug == 'true' : false;
+  
+  if (epgDebug) {
+    console.log('userAgent: ' + $window.navigator.userAgent);
+    console.log('location: ' + $window.location);
+    console.log('startTime: ' + startTime);
+  }
   
   $scope.guideData = new GuideData(startTime, $scope.slotWidth, guideInterval, awaitPrime, guideHistory, channelGroupId, mythlingServices, demoMode);
   
@@ -165,8 +168,10 @@ epgApp.controller('EpgController',
       $scope.popElem.triggerHandler('popHide');
       $scope.popElem.children(0).removeClass('program-select');
       $scope.popElem = null;
+      $scope.fireEpgAction('close.menu');
     }
   };
+  popHide = $scope.popHide;
   
   $scope.popPlace = "top";
   $scope.setPopPlace = function(place) {
@@ -178,6 +183,13 @@ epgApp.controller('EpgController',
   win.bind('scroll', $scope.popHide);
   win.bind('resize', $scope.popHide);
   
+  $scope.$on('$destroy', function() {
+    win.unbind('click', $scope.popHide);
+    win.unbind('scroll', $scope.popHide);
+    win.unbind('resize', $scope.popHide);
+  });
+  
+  
   // TODO make details a service
   $scope.details = function(program) {
     // TODO: better way to keep element showing selected
@@ -185,7 +197,7 @@ epgApp.controller('EpgController',
       angular.element(document.getElementById(program.id)).addClass('program-select');
     }, 0);
     
-    $scope.fireEpgAction('details');
+    $scope.fireEpgAction('open.details');
     
     if ($scope.guideData.demoMode) {
       $scope.program = program;
@@ -200,13 +212,16 @@ epgApp.controller('EpgController',
         $timeout(function() {
           var progElem = document.getElementById(program.id);
           angular.element(progElem).removeClass('program-select');
+          progElem.focus();
+          $scope.fireEpgAction('close.details');          
         }, 0);    
       });
       return;
     }
     
     var url = '/Guide/GetProgramDetails?ChanId=' + program.channel.ChanId + '&StartTime=' + program.StartTime;
-    console.log('details url: ' + url);
+    if (epgDebug)
+      console.log('details url: ' + url);
     $http.get(url).success(function(data) {
       var Program = data.Program;
       if (Program.Description)
@@ -266,6 +281,8 @@ epgApp.controller('EpgController',
         $timeout(function() {
           var progElem = document.getElementById(program.id);
           angular.element(progElem).removeClass('program-select');
+          progElem.focus();
+          $scope.fireEpgAction('close.details');    
         }, 0);    
       });
     });
@@ -273,6 +290,8 @@ epgApp.controller('EpgController',
   
   $scope.fireEpgAction = function(name) {
     if (typeof CustomEvent == 'function')
+      if (epgDebug)
+        console.log('firing epgAction: ' + name);
       document.dispatchEvent(new CustomEvent('epgAction', {'detail': name})); // enable outside listeners
   };
   
@@ -291,7 +310,8 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
   return {
     restrict: 'A',
     link: function link(scope, elem, attrs) {
-      elem.bind('click', function() {
+      
+      var popHandler = function() {
         if (scope.popElem != elem) {
           // calculate placement
           var viewportOffset = elem[0].getBoundingClientRect();
@@ -318,16 +338,52 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
                 place = 'left';
             }
           }
-          
+
           scope.setPopPlace(place);
           scope.$apply();
+
           $timeout(function() {
             if (scope.popElem === null) {
               elem.triggerHandler('popShow');
               scope.setPopElem(elem);
+              scope.fireEpgAction('open.menu');
             }
           }, 0);
         }
+      };
+
+      var keyHandler = function(event) {
+        if (event.which === 13) {
+          event.preventDefault();
+          if (scope.popElem === elem)
+            popHide();
+          else
+            popHandler();
+        }
+      };
+      
+      elem.bind('click', popHandler);
+      elem.bind('keypress', keyHandler);
+      
+      scope.$on('$destroy', function() {
+        elem.unbind('click', popHandler);
+        elem.unbind('keypress', keyHandler);
+      });
+    }
+  };
+}]);
+
+epgApp.directive('popHide', ['$timeout', function($timeout) {
+  return {
+    restrict: 'A',
+    link: function link(scope, elem, attrs) {
+      var blurHandler = function(event) {
+        scope.popHide();
+      };
+      
+      elem.bind('blur', blurHandler);
+      scope.$on('$destroy', function() {
+        elem.unbind('blur', blurHandler);
       });
     }
   };
@@ -337,13 +393,19 @@ epgApp.directive('onEnter', function() {
   return {
     restrict: 'A',
     link: function link(scope, elem, attrs) {
-      elem.bind('keypress', function(event) {
+      
+      var keyHandler = function(event) {
         if (event.which === 13) {
           scope.$apply(function() {
             scope.$eval(attrs.onEnter);
           });
           event.preventDefault();
         }
+      };
+      
+      elem.bind('keypress', keyHandler);
+      scope.$on('$destroy', function() {
+        elem.unbind('click', keyHandler);
       });
     }
   };
@@ -371,8 +433,14 @@ epgApp.directive('blurMe', function() {
   return {
     restrict: 'A',
     link: function link(scope, elem, attrs) {
-      elem.bind('focus', function() {
+
+      var focusHandler = function() {
         elem[0].blur();
+      };
+      
+      elem.bind('focus', focusHandler);
+      scope.$on('$destroy', function() {
+        elem.unbind('focus', focusHandler);
       });
     }
   };
@@ -382,7 +450,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
   return {
     restrict: 'A',
     link: function link(scope, elem, attrs) {
-      elem.bind('click', function() {
+      var clickHandler = function() {
         var action = attrs.epgRecord;
         // TODO use a controller -- this MUST be refactored
         var url = '/Dvr/';
@@ -413,8 +481,8 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
         if (action == 'transcode')
           url += '&AutoTranscode=true';
 
-        scope.fireEpgAction('record');
-        console.log('record action url: ' + url);
+        if (epgDebug)
+          console.log('record action url: ' + url);
         if (scope.guideData.demoMode) {
           if ((action == 'single' || action == 'transcode' || action == 'all'))
             scope.program.recStatus = RECORD_STATUSES[11];
@@ -426,12 +494,14 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
             if (action == 'remove') {
               var recId = data.RecRule.Id;
               url = '/Dvr/RemoveRecordSchedule?RecordId=' + recId;
-              console.log('remove recording schedule url: ' + url);
+              if (epgDebug)
+                console.log('remove recording schedule url: ' + url);
               $http.post(url).success(function(data, status, headers, config) {
                 $timeout(function() {
                   var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
                   $http.get(upcomingUrl).success(function(data, status, headers, config) {
-                    console.log('upcoming list response time: ' + config.responseTime);
+                    if (epgDebug)
+                      console.log('upcoming list response time: ' + config.responseTime);
                     // update all guide data for matching titles per upcoming recordings (consider omitting title match) 
                     var upcoming = data.ProgramList.Programs;
                     var upcomingForTitle = [];
@@ -469,7 +539,8 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
               $timeout(function() {
                 var upcomingUrl = '/Dvr/GetUpcomingList?ShowAll=true';
                 $http.get(upcomingUrl).success(function(data, status, headers, config) {
-                  console.log('upcoming list response time: ' + config.responseTime);
+                  if (epgDebug)
+                    console.log('upcoming list response time: ' + config.responseTime);
                   // update recording status for all matching programs in upcoming recordings
                   var upcoming = data.ProgramList.Programs;
                   for (var i = 0; i < upcoming.length; i++) {
@@ -494,6 +565,12 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
             console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
           });
         }
+      };
+      
+      elem.bind('click', clickHandler);
+      
+      scope.$on('$destroy', function() {
+        elem.unbind('click', clickHandler);
       });
     }
   };
@@ -529,7 +606,8 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
 
   GuideData.prototype.setStartTime = function(startTime) {
 
-    console.log('startTime: ' + startTime.toISOString());
+    if (epgDebug)
+      console.log('startTime: ' + startTime.toISOString());
     
     this.curDate = new Date(startTime);
     
@@ -584,7 +662,8 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
     if (this.channelGroupId && this.channelGroupId > 0)
       path += "&ChannelGroupId=" + this.channelGroupId;
     url += this.demoMode ? path.replace(/:/g, '-') + '.json' : path;
-    console.log('retrieving from: ' + url);
+    if (epgDebug)
+      console.log('retrieving from: ' + url);
     if (this.awaitPrime)
       angular.element(document.body).bind('touchmove', this.preventMobileScroll);
     
@@ -600,10 +679,12 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
       console.log(ERROR_TAG + 'HTTP ' + status + ': ' + url);
       this.busy = false;
     }).success(function(data, status, headers, config) {
-      console.log('guide data response time: ' + config.responseTime);
+      if (epgDebug)
+        console.log('guide data response time: ' + config.responseTime);
       if (typeof this.isMyth28 === 'undefined') {
         this.mythVersion = data.ProgramGuide.Version ? data.ProgramGuide.Version : '0.27';
-        console.log('MythTV version ' + this.mythVersion);
+        if (epgDebug)
+          console.log('MythTV version ' + this.mythVersion);
         this.isMyth28 = !this.mythVersion.startsWith('0.27');
       }
       
@@ -717,7 +798,8 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
       
       if (programId && programId !== null) {
         $timeout(function() {
-          console.log('selecting program: ' + programId);
+          if (epgDebug)
+            console.log('selecting program: ' + programId);
           document.getElementById(programId).focus();
         }, 0);
       }
@@ -807,8 +889,12 @@ function parseCssDim(dim) {
   return parseInt(dim);
 }
 
-// hack: function for outside access from stay-omb
+//globals
+var epgDebug;
+// function for outside access from stay-omb
 var setPosition;
+// function for outside access from epg-device
+var popHide;
 
 // in case js string does not supply startsWith() and endsWith()
 if (typeof String.prototype.startsWith != 'function') {

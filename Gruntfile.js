@@ -35,15 +35,22 @@ module.exports = function(grunt) {
         // options here to override JSHint defaults
         globalstrict: true,
         globals: {
-          console: true,
-          module: true,
-          document: true,
-          window: true,
-          CustomEvent: true,
+          console: false,
+          module: false,
+          document: false,
+          window: false,
+          CustomEvent: false,
           angular: false,
           jsHandler: false,
           setPosition: true,
-          setTimeout: true
+          setTimeout: true,
+          // TODO: maybe can remove these globals?
+          epgDebug: true,
+          menuOpen: true,
+          menuProgId: true,
+          detailsOpen: true,
+          setPopup: true,
+          popHide: true
         }
       }
     },
@@ -84,7 +91,7 @@ module.exports = function(grunt) {
         }, {
           expand: true,
           cwd: 'src',
-          src: [ 'epg-firetv.js' ],
+          src: [ 'epg-device.js', 'epg-firetv.js' ],
           dest: 'dist/js'
         }]
       },

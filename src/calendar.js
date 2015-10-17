@@ -22,6 +22,10 @@ epgCalendar.controller('EpgCalController', ['$scope', '$timeout', function($scop
     }
   };
   
+  $scope.$watch('calendarOpened', function(isOpened) {
+    $scope.fireEpgAction(isOpened ? 'open.calendar' : 'close.calendar');
+  });  
+  
   $scope.currentDate = function(newValue) {
     if (newValue) {
       var newTime = new Date(newValue);
@@ -32,7 +36,6 @@ epgCalendar.controller('EpgCalController', ['$scope', '$timeout', function($scop
       startTime.setHours(0);
       startTime.setMinutes(0);
       $scope.guideData.setStartTime(startTime);
-      $scope.fireEpgAction('calendar');
       $scope.guideData.nextPage(null, newTime);
     }
     return $scope.guideData.curDate;

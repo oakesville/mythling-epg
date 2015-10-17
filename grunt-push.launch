@@ -2,5 +2,5 @@
 <launchConfiguration type="org.eclipse.ui.externaltools.ProgramLaunchConfigurationType">
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${system_path:grunt.cmd}"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="--no-color push"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="Y:\mythling-epg"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="Z:\mythling-epg"/>
 </launchConfiguration>
