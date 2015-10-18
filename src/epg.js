@@ -1,4 +1,4 @@
-/*! mythling-epg v1.2.01
+/*! mythling-epg v1.2.1
  *  Copyright 2015 Donald Oakes
  *  License: Apache-2.0 */
 'use strict';
