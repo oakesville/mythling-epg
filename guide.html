@@ -51,7 +51,7 @@
         {{::channel.ChanNum}}<br/>{{::channel.CallSign}}
       </div>
       <div class="channel-icon" ng-if="showChannelIcons">
-        <img ng-src="{{::channel.IconURL}}" err-src="http://google.com/favicon.ico" ng-style="::{height:rowHeight-4+'px'}" />
+        <img ng-src="{{::channel.IconURL}}" ng-style="::{height:rowHeight-4+'px'}" alt="{{::channel.CallSign}}" />
       </div>
     </div>
   </div>

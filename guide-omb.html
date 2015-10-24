@@ -52,15 +52,21 @@
 
   <div id="channel-column-f" class="channel-column f" ng-style="::{top:headerHeight+'px'}">
     <div class="channel-outer label-width row-height" ng-repeat="channel in guideData.channels">
-      <div class="channel">
+      <div class="channel" ng-if="!showChannelIcons">
         {{::channel.ChanNum}}<br/>{{::channel.CallSign}}
+      </div>
+      <div class="channel-icon" ng-if="showChannelIcons">
+        <img ng-src="{{::channel.IconURL}}" ng-style="::{height:rowHeight-4+'px'}" alt="{{::channel.CallSign}}" />
       </div>
     </div>
   </div>
   <div id="channel-column-a" class="channel-column a" ng-style="::{top:headerHeight+'px'}">
     <div class="channel-outer label-width row-height" ng-repeat="channel in guideData.channels">
-      <div class="channel">
+      <div class="channel" ng-if="!showChannelIcons">
         {{::channel.ChanNum}}<br/>{{::channel.CallSign}}
+      </div>
+      <div class="channel-icon" ng-if="showChannelIcons">
+        <img ng-src="{{::channel.IconURL}}" ng-style="::{height:rowHeight-4+'px'}" alt="{{::channel.CallSign}}" />
       </div>
     </div>
   </div>
