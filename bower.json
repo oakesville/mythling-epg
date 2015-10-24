@@ -4,6 +4,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "angular": "1.3.x",
-    "angular-bootstrap": "0.13.x"
+    "angular-bootstrap": "0.13.3"
   }
 }
