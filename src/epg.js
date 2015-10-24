@@ -362,8 +362,7 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
         }
       };
 
-      var keyHandler = function(event) {
-        console.log('event.which: ' + event.which);
+      var popKeyHandler = function(event) {
         if (event.which === 13) {
           event.preventDefault();
           if (scope.popElem === elem)
@@ -378,11 +377,11 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
       };
       
       elem.bind('click', popHandler);
-      elem.bind('keyup', keyHandler);
+      elem.bind('keyup', popKeyHandler);
       
       scope.$on('$destroy', function() {
         elem.unbind('click', popHandler);
-        elem.unbind('keypress', keyHandler);
+        elem.unbind('keyup', popKeyHandler);
       });
     }
   };
