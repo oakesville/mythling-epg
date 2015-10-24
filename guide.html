@@ -47,8 +47,11 @@
     
   <div class="channel-column" stay="left" stay-revert-to-fixed="{{revertLabelsToFixed}}" stay-track="setPosition" ng-style="::{top:headerHeight+'px'}">
     <div class="channel-outer label-width row-height" ng-repeat="channel in guideData.channels">
-      <div class="channel">
+      <div class="channel" ng-if="!showChannelIcons">
         {{::channel.ChanNum}}<br/>{{::channel.CallSign}}
+      </div>
+      <div class="channel-icon" ng-if="showChannelIcons">
+        <img ng-src="{{::channel.IconURL}}" err-src="http://google.com/favicon.ico" ng-style="::{height:rowHeight-4+'px'}" />
       </div>
     </div>
   </div>

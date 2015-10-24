@@ -110,12 +110,14 @@ epgApp.controller('EpgController',
   var params = urlParams();
   // supportedParams
   var startTime = params.startTime ? new Date(params.startTime) : new Date();
-  startTime = params.StartTime ? new Date(params.StartTime) : startTime; // support MythTV param name
+  startTime = params.StartTime ? new Date(params.StartTime) : startTime; // support std MythTV param name
   var guideInterval = params.guideInterval ? parseInt(params.guideInterval) : 12; // hours
   var guideHistory = params.guideHistory ? parseInt(params.guideHistory) : 0; // hours (must be less than interval)
   $scope.bufferSize = params.bufferSize ? parseInt(params.bufferSize) : 8; // screen widths (say, around 2 hours per)
   var awaitPrime = params.awaitPrime ? params.awaitPrime == 'true' : false; // whether to disable mobile scroll until loaded
   var channelGroupId = params.channelGroupId ? parseInt(params.channelGroupId) : 0;
+  $scope.showChannelIcons = params.showChannelIcons ? params.showChannelIcons == 'true' : false; // display channel icons on guide/detail
+  var recordingPriority = params.recordingPriority ? params.recordingPriority : 0; // priority for all recordings scheduled thru epg
   var mythlingServices = params.mythlingServices ? params.mythlingServices == 'true' : false;
   var demoMode = params.demoMode ? params.demoMode == 'true' : false;
   $scope.revertLabelsToFixed = params.revertLabelsToFixed ? parseInt(params.revertLabelsToFixed) : 0; // ms till revert to fixed
