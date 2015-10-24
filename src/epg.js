@@ -178,17 +178,6 @@ epgApp.controller('EpgController',
     $scope.popPlace = place;
   };
   
-  var win = angular.element($window); 
-  win.bind('click', $scope.popHide);
-  win.bind('scroll', $scope.popHide);
-  win.bind('resize', $scope.popHide);
-  
-  $scope.$on('$destroy', function() {
-    win.unbind('click', $scope.popHide);
-    win.unbind('scroll', $scope.popHide);
-    win.unbind('resize', $scope.popHide);
-  });
-  
   
   // TODO make details a service
   $scope.details = function(program) {
@@ -306,6 +295,27 @@ epgApp.controller('EpgModalController', ['$scope', '$timeout', '$modalInstance',
   };
 }]);
 
+// container for one-at-a-time popovers
+epgApp.directive('popContainer', ['$window', function($window) {
+  
+  return {
+    restrict: 'A',
+    link: function link(scope, elem, attrs) {
+
+      var win = angular.element($window); 
+      win.bind('click', scope.popHide);
+      win.bind('scroll', scope.popHide);
+      win.bind('resize', scope.popHide);
+      
+      scope.$on('$destroy', function() {
+        win.unbind('click', scope.popHide);
+        win.unbind('scroll', scope.popHide);
+        win.unbind('resize', scope.popHide);
+      });
+    }
+  }
+}]);
+
 epgApp.directive('popClick', ['$timeout', function($timeout) {
   return {
     restrict: 'A',
@@ -353,6 +363,7 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
       };
 
       var keyHandler = function(event) {
+        console.log('event.which: ' + event.which);
         if (event.which === 13) {
           event.preventDefault();
           if (scope.popElem === elem)
@@ -360,10 +371,14 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
           else
             popHandler();
         }
+        else if (event.which === 27 && scope.popElem === elem) {
+          event.preventDefault();
+          popHide();
+        }
       };
       
       elem.bind('click', popHandler);
-      elem.bind('keypress', keyHandler);
+      elem.bind('keyup', keyHandler);
       
       scope.$on('$destroy', function() {
         elem.unbind('click', popHandler);
