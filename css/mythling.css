@@ -210,6 +210,15 @@ table {
 .program-details {
   padding-top: 2px;
 }
+.details-icon {
+  float: left;
+  padding: 0 5px 5px 0;
+  padding-bottom: 
+}
+.details-icon > img {
+	height: 70px;
+	max-width: 125px;
+}
 .details-status {
   float: left;
   font-size: 14px;
@@ -395,6 +404,9 @@ table {
 }
 .modal-body p {
   margin: 0 0 5px;
+}
+.modal-details {
+	clear: both;
 }
 .modal-footer {
   margin-top: 10px;

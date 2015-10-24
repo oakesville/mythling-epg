@@ -61,7 +61,7 @@ epgApp.value('RECORD_STATUSES', [
 ]);
 
 epgApp.config(['$compileProvider', function($compileProvider) {
-  var debugInfo = 'true' == urlParams().angularDebug;
+  var debugInfo = 'true' == urlParams().epgDebug;
   $compileProvider.debugInfoEnabled(debugInfo);
 }]);
 
@@ -217,7 +217,9 @@ epgApp.controller('EpgController',
       var Program = data.Program;
       if (Program.Description)
         program.description = Program.Description.replace('``', '"');
-      if (Program.Airdate && "true" === Program.Repeat) {
+      program.repeat = "true" === Program.Repeat;
+      program.isMovie = "movie" === Program.CatType;
+      if (Program.Airdate) {
         var oad = Program.Airdate;
         var d = new Date();
         d.setFullYear(parseInt(oad.substring(0, oad.indexOf('-'))));
@@ -227,7 +229,7 @@ epgApp.controller('EpgController',
         d.setMinutes(0);
         d.setSeconds(0);
         d.setMilliseconds(0);
-        program.originalAirDate = d;
+        program.aired = d;
       }
       if (Program.Category)
         program.category = Program.Category;
