@@ -31,25 +31,20 @@ var searchBackward = function() {
   document.getElementById('searchBackwardBtn').click();
 };
 
-function programKey(event) {
-  if (event.keyCode == 13) {  // enter
-    if (menuOpen) {
-      setTimeout(function() { 
-        var menuItem = document.getElementById('menu-details');
-        var ulElem = menuItem.parentElement.parentElement; 
-        var items = ulElem.querySelectorAll('li > a').length;
-        jsHandler.setMenuItems(items);
-        menuItem.focus();
-      }, 0);
-    }
-  }
-}
-
 document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
 });
 
 document.addEventListener('epgAction', function(event) {
+  if (event.detail == 'open.menu') {
+    setTimeout(function() { 
+      var menuItem = document.getElementById('menu-details');
+      var ulElem = menuItem.parentElement.parentElement; 
+      var items = ulElem.querySelectorAll('li > a').length;
+      jsHandler.setMenuItems(items);
+      menuItem.focus();
+    }, 0);
+  }
 //  if (event.detail == 'calendar') {
 //    setTimeout(function() { 
 //      document.getElementById('calendarBtn').focus();
@@ -169,17 +164,7 @@ function webViewKey(key) {
           }
         }
       }
-    }
-    
-    if (focused !== null) {
-      if (oldFocused !== null && oldFocused.id && oldFocused.id.startsWith('ch')) {
-        oldFocused.removeEventListener('keypress', programKey);
-        
-      }
-      if (focused.id && focused.id.startsWith('ch')) {
-        focused.addEventListener('keypress', programKey);
-      }
-    }
+    }    
   }
 
   if (focused !== null) {

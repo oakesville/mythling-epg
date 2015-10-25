@@ -317,7 +317,7 @@ epgApp.directive('popContainer', ['$window', function($window) {
         win.unbind('resize', scope.popHide);
       });
     }
-  }
+  };
 }]);
 
 epgApp.directive('popClick', ['$timeout', function($timeout) {
