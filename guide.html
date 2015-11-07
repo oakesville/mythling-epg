@@ -50,7 +50,7 @@
       <div class="channel" ng-if="!showChannelIcons">
         {{::channel.ChanNum}}<br/>{{::channel.CallSign}}
       </div>
-      <div class="channel-icon" ng-if="showChannelIcons">
+      <div class="channel-icon" ng-if="showChannelIcons" title="{{::channel.CallSign}}">
         <img ng-src="{{::channel.IconURL}}" ng-style="::{height:rowHeight-4+'px'}" alt="{{::channel.CallSign}}" />
       </div>
     </div>
