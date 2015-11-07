@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>mythling-epg</name>
+	<name>mythling-epg (mythbe2)</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -10,7 +10,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1445131091161</id>
+			<id>0</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -19,7 +19,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1445131091202</id>
+			<id>0</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
