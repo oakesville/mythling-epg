@@ -130,6 +130,7 @@ module.exports = function(grunt) {
     'demo-data': { // grunt demo-data --mythling-password=<pw>
       dist: {
         baseUrl: 'http://192.168.0.69',
+        iconBaseUrl: 'http://192.168.0.69:6544',
         user: 'mythling',
         password: '<%= grunt.option("mythling-password") %>',
         startDate: new Date(),
