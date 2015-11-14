@@ -117,7 +117,7 @@ epgApp.controller('EpgController',
   var awaitPrime = params.awaitPrime ? params.awaitPrime == 'true' : false; // whether to disable mobile scroll until loaded
   var channelGroupId = params.channelGroupId ? parseInt(params.channelGroupId) : 0;
   $scope.showChannelIcons = params.showChannelIcons ? params.showChannelIcons == 'true' : false; // display channel icons on guide/detail
-  var recordingPriority = params.recordingPriority ? params.recordingPriority : 0; // priority for all recordings scheduled thru epg
+  $scope.recordingPriority = params.recordingPriority ? params.recordingPriority : 0; // priority for all recordings scheduled thru epg
   var mythlingServices = params.mythlingServices ? params.mythlingServices == 'true' : false;
   var demoMode = params.demoMode ? params.demoMode == 'true' : false;
   $scope.revertLabelsToFixed = params.revertLabelsToFixed ? parseInt(params.revertLabelsToFixed) : 0; // ms till revert to fixed
@@ -481,6 +481,9 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
               'Type=' + (action == 'transcode' ? 'single' : action) + '&' + 
               'Title=' + encodeURI(scope.program.Title) + '&' + 
               'FindDay=0&FindTime=00:00:00';
+          if (scope.recordingPriority != 0)
+            url += '&RecPriority=' + scope.recordingPriority;
+          
         }
         else if (action == 'dont' || action == 'never') {
           url += 'AddDontRecordSchedule?' + 
@@ -494,7 +497,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
         }
         
         if (action == 'never')
-          url += 'NeverRecord=true';
+          url += '&NeverRecord=true';
         
         if (action == 'transcode')
           url += '&AutoTranscode=true';
