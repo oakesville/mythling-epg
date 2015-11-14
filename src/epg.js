@@ -481,7 +481,7 @@ epgApp.directive('epgRecord', ['$http', '$timeout', 'ERROR_TAG', 'RECORD_STATUSE
               'Type=' + (action == 'transcode' ? 'single' : action) + '&' + 
               'Title=' + encodeURI(scope.program.Title) + '&' + 
               'FindDay=0&FindTime=00:00:00';
-          if (scope.recordingPriority != 0)
+          if (scope.recordingPriority !== 0)
             url += '&RecPriority=' + scope.recordingPriority;
           
         }
