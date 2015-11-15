@@ -9,12 +9,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
 });
 
-var searchInputChange = function(event) {
-  var searchFwdBtn = document.getElementById('searchForwardBtn');
-  searchFwdBtn.focus();
-  searchFwdBtn.click();
-};
-
 var searchForward = function() {
   document.getElementById('searchForwardBtn').click();
 };
@@ -26,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
 });
 
-var searchInputHandlerAdded = false;
 var searchClosedOnce = false;
 var menuProgElem = null;
 
@@ -37,17 +30,47 @@ document.addEventListener('epgAction', function(event) {
       var menuItem = document.getElementById('menu-details');
       var ulElem = menuItem.parentElement.parentElement; 
       var items = ulElem.querySelectorAll('li > a').length;
-      jsHandler.setMenuItems(items);
+      fireTvJsHandler.setMenuItems(items);
       menuItem.focus();
     }, 0);
   }
   else if (event.detail == 'open.search') {
       var searchInput = document.getElementById('searchInput');
-      if (searchInput != null) { // not from preload
-        if (!searchInputHandlerAdded) {
-          searchInput.addEventListener('change', searchInputChange);
-          searchInputHandlerAdded = true;
-        }
+      if (searchInput !== null) { // not from preload
+        searchInput.value = ''; // prevent remembering previous (causes funny behavior)
+        searchInput.addEventListener('change', function(event) {
+          var searchFwdBtn = document.getElementById('searchForwardBtn');
+          if (searchInput.value !== '') {
+            searchFwdBtn.click();
+          }
+        });
+        searchInput.addEventListener('focus', function(event) {
+          fireTvJsHandler.setSearchFocus(searchInput.id);
+        });
+        searchInput.addEventListener('blur', function(event) {
+          fireTvJsHandler.setSearchFocus(null);
+        });
+        var searchCloseBtn = document.getElementById('searchCloseBtn');
+        searchCloseBtn.addEventListener('focus', function(event) {
+          fireTvJsHandler.setSearchFocus(searchCloseBtn.id);
+        });
+        searchCloseBtn.addEventListener('blur', function(event) {
+          fireTvJsHandler.setSearchFocus(null);
+        });
+        var searchForwardBtn = document.getElementById('searchForwardBtn');
+        searchForwardBtn.addEventListener('focus', function(event) {
+          fireTvJsHandler.setSearchFocus(searchForwardBtn.id);
+        });
+        searchForwardBtn.addEventListener('blur', function(event) {
+          fireTvJsHandler.setSearchFocus(null);
+        });
+        var searchBackwardBtn = document.getElementById('searchBackwardBtn');
+        searchBackwardBtn.addEventListener('focus', function(event) {
+          fireTvJsHandler.setSearchFocus(searchBackwardBtn.id);
+        });
+        searchBackwardBtn.addEventListener('blur', function(event) {
+          fireTvJsHandler.setSearchFocus(null);
+        });
       }
   }
   else if (event.detail == 'close.menu') {
@@ -62,7 +85,9 @@ document.addEventListener('epgAction', function(event) {
   }
   else if (event.detail == 'close.search') {
     if (searchClosedOnce) { // not initial preload
-      document.getElementById('searchBtn').focus();
+      if (!document.activeElement || !document.activeElement.id || document.activeElement.id.startsWith('search'))
+        document.getElementById('searchBtn').focus();
+      fireTvJsHandler.setSearchFocus(null);
     }
     searchClosedOnce = true;
   }
@@ -184,6 +209,8 @@ function webViewKey(key) {
 
   if (focused !== null) {
     focused.focus();
+//    if (searchOpen && !focused.id.startsWith('ch') && !focused.id.startsWith('cal'))
+//      closePopup();
     if (epgDebug)
       console.log('new focused id: ' + focused.id);
   }
