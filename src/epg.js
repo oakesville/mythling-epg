@@ -381,11 +381,14 @@ epgApp.directive('popClick', ['$timeout', function($timeout) {
       };
       
       elem.bind('click', popHandler);
-      elem.bind('keyup', popKeyHandler);
+      // allow fire tv to prevent this
+      if (typeof preventProgramBindings === 'undefined' || !preventProgramBindings)
+        elem.bind('keyup', popKeyHandler);
       
       scope.$on('$destroy', function() {
         elem.unbind('click', popHandler);
-        elem.unbind('keyup', popKeyHandler);
+        if (typeof preventProgramBindings === 'undefined' || !preventProgramBindings)
+          elem.unbind('keyup', popKeyHandler);
       });
     }
   };
@@ -399,10 +402,13 @@ epgApp.directive('popHide', ['$timeout', function($timeout) {
         scope.popHide();
       };
       
-      elem.bind('blur', blurHandler);
-      scope.$on('$destroy', function() {
-        elem.unbind('blur', blurHandler);
-      });
+      // allow fire tv to prevent this
+      if (typeof preventProgramBindings === 'undefined' || !preventProgramBindings) {
+        elem.bind('blur', blurHandler);
+        scope.$on('$destroy', function() {
+          elem.unbind('blur', blurHandler);
+        });
+      }
     }
   };
 }]);

@@ -3,6 +3,8 @@
  *  License: Apache-2.0 */
 'use strict';
 
+var preventProgramBindings = true;
+
 document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
 });
@@ -45,11 +47,16 @@ document.addEventListener('epgAction', function(event) {
       menuItem.focus();
     }, 0);
   }
-//  if (event.detail == 'calendar') {
-//    setTimeout(function() { 
-//      document.getElementById('calendarBtn').focus();
-//    }, 0);
-//  }
+  else if (event.detail == 'close.menu') {
+    if (focused) {
+      document.getElementById(focused.id).focus();
+    }
+  }
+  else if (event.detail == 'close.calendar') {
+    setTimeout(function() { 
+      document.getElementById('calendarBtn').focus();
+    }, 0);
+  }
 });
 
 var offset = 0;
@@ -110,7 +117,6 @@ function webViewKey(key) {
   
   var foc = document.activeElement;
   if (foc && foc.id) {
-    var oldFocused = focused;
     
     if (foc.id == 'calendarBtn') {
       if (key == 'right')

@@ -50,7 +50,8 @@ module.exports = function(grunt) {
           menuProgId: true,
           detailsOpen: true,
           setPopup: true,
-          popHide: true
+          popHide: true,
+          preventProgramBindings: true
         }
       }
     },
