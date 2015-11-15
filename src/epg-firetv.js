@@ -15,17 +15,6 @@ var searchInputChange = function(event) {
   searchFwdBtn.click();
 };
 
-var searchInputHandlerAdded = false;
-var searchBtnClick = function(event) {
-  if (!searchInputHandlerAdded) {
-    var searchInput = document.getElementById('searchInput');
-    if (searchInput !== null) { // may be result of pre-open
-      searchInput.addEventListener('change', searchInputChange);
-      searchInputHandlerAdded = true;
-    }
-  }
-};
-
 var searchForward = function() {
   document.getElementById('searchForwardBtn').click();
 };
@@ -37,8 +26,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('calendarBtn').focus();
 });
 
+var searchInputHandlerAdded = false;
+var searchClosedOnce = false;
+var menuProgElem = null;
+
 document.addEventListener('epgAction', function(event) {
   if (event.detail == 'open.menu') {
+    menuProgElem = document.activeElement;
     setTimeout(function() { 
       var menuItem = document.getElementById('menu-details');
       var ulElem = menuItem.parentElement.parentElement; 
@@ -47,15 +41,30 @@ document.addEventListener('epgAction', function(event) {
       menuItem.focus();
     }, 0);
   }
+  else if (event.detail == 'open.search') {
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput != null) { // not from preload
+        if (!searchInputHandlerAdded) {
+          searchInput.addEventListener('change', searchInputChange);
+          searchInputHandlerAdded = true;
+        }
+      }
+  }
   else if (event.detail == 'close.menu') {
-    if (focused) {
-      document.getElementById(focused.id).focus();
+    if (menuProgElem) {
+      document.getElementById(menuProgElem.id).focus();
     }
   }
   else if (event.detail == 'close.calendar') {
     setTimeout(function() { 
       document.getElementById('calendarBtn').focus();
     }, 0);
+  }
+  else if (event.detail == 'close.search') {
+    if (searchClosedOnce) { // not initial preload
+      document.getElementById('searchBtn').focus();
+    }
+    searchClosedOnce = true;
   }
 });
 
