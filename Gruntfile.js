@@ -42,6 +42,7 @@ module.exports = function(grunt) {
           CustomEvent: false,
           angular: false,
           jsHandler: false,
+          fireTvJsHandler: false,
           setPosition: true,
           setTimeout: true,
           // TODO: maybe can remove these globals?
