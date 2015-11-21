@@ -209,8 +209,6 @@ function webViewKey(key) {
 
   if (focused !== null) {
     focused.focus();
-//    if (searchOpen && !focused.id.startsWith('ch') && !focused.id.startsWith('cal'))
-//      closePopup();
     if (epgDebug)
       console.log('new focused id: ' + focused.id);
   }
