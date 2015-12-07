@@ -37,7 +37,8 @@ document.addEventListener('epgAction', function(event) {
   else if (event.detail == 'open.search') {
       var searchInput = document.getElementById('searchInput');
       if (searchInput !== null) { // not from preload
-        searchInput.value = ''; // prevent remembering previous (causes funny behavior)
+        if (!searchInput.disabled)
+          searchInput.value = ''; // prevent remembering previous (causes funny behavior)
         searchInput.addEventListener('change', function(event) {
           var searchFwdBtn = document.getElementById('searchForwardBtn');
           if (searchInput.value !== '') {

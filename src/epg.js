@@ -281,11 +281,20 @@ epgApp.controller('EpgController',
     });
   };
   
+  // enable outside listeners
   $scope.fireEpgAction = function(name) {
     if (typeof CustomEvent == 'function')
       if (epgDebug)
         console.log('firing epgAction: ' + name);
-      document.dispatchEvent(new CustomEvent('epgAction', {'detail': name})); // enable outside listeners
+    var customEvent;
+    try {
+      customEvent = new CustomEvent('epgAction', {'detail': name});
+    } catch (e) {
+      // ie
+      customEvent = document.createEvent("CustomEvent");
+      customEvent.initCustomEvent('epgAction', false, false, {'detail': name});
+    }
+    document.dispatchEvent(customEvent);
   };
   
   if ($scope.bufferSize === 0)
@@ -715,6 +724,7 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
         this.isMyth28 = !this.mythVersion.startsWith('0.27');
       }
       
+      var procStart = Date.now();
       var chans = data.ProgramGuide.Channels;
       
       var isFirstRetrieve = this.startTime.getTime() == this.beginTime.getTime();
@@ -843,6 +853,10 @@ epgApp.factory('GuideData', ['$http', '$timeout', '$window', '$filter', 'ERROR_T
       
       cal.removeClass('input-warn');
       cal.val($filter('date')(this.curDate, 'EEE MMM d'));
+      
+      var procEnd = Date.now();
+      if (epgDebug)
+        console.log('guide data processing time: ' + (procEnd - procStart));
       this.busy = false;
       
     }.bind(this));
