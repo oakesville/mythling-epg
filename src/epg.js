@@ -283,13 +283,13 @@ epgApp.controller('EpgController',
   
   // enable outside listeners
   $scope.fireEpgAction = function(name) {
-    if (typeof CustomEvent == 'function')
-      if (epgDebug)
-        console.log('firing epgAction: ' + name);
+    if (epgDebug)
+      console.log('firing epgAction: ' + name + ' (type=' + typeof name + ')');
     var customEvent;
-    try {
+    if (typeof CustomEvent == 'function') {
       customEvent = new CustomEvent('epgAction', {'detail': name});
-    } catch (e) {
+    }
+    else {
       // ie
       customEvent = document.createEvent("CustomEvent");
       customEvent.initCustomEvent('epgAction', false, false, {'detail': name});
